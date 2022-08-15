@@ -3,5 +3,6 @@
     "jsx": "react-jsx",
     "module": "esnext"
   },
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "typeRoots": ["typing"]
 }
