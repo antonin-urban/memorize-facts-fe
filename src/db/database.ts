@@ -21,7 +21,7 @@ const storage = getRxStoragePouch('react-native-sqlite');
 
 const isDevelopment = process.env.NODE_ENV !== 'prod' || process.env.DEBUG_PROD === 'true';
 
-export async function initializeDb(): Promise<RxDatabase> {
+export async function initialize(): Promise<RxDatabase> {
   let database: RxDatabase;
 
   if (isDevelopment) {

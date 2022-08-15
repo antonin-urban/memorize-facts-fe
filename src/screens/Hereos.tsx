@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AppContext } from './src/appContext';
+import { AppContext } from '../components/AppContext';
 import { v4 as uuidv4 } from 'uuid';
 
 const { width } = Dimensions.get('window');
@@ -97,7 +97,7 @@ export default function Heroes() {
           />
           {name.length > 1 && (
             <TouchableOpacity onPress={addHero}>
-              <Image style={styles.plusImage} source={require('./src/assets/plusIcon.png')} />
+              <Image style={styles.plusImage} source={require('../../assets/plusIcon.png')} />
             </TouchableOpacity>
           )}
         </View>
@@ -114,7 +114,7 @@ export default function Heroes() {
             />
             <Text style={styles.heroName}>{hero.get('firstName')}</Text>
             <TouchableOpacity onPress={() => removeHero(hero)} style={styles.alignRight}>
-              <Image style={styles.deleteImage} source={require('./src/assets/deleteIcon.png')} />
+              <Image style={styles.deleteImage} source={require('../../assets/deleteIcon.png')} />
             </TouchableOpacity>
           </View>
         ))}
