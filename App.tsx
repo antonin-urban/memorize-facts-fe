@@ -1,3 +1,4 @@
+// for this first import see https://github.com/uuidjs/uuid/issues/416
 import 'react-native-get-random-values';
 import { useState, useEffect } from 'react';
 import { AppContext } from './src/appContext';
