@@ -1,6 +1,8 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useContext, useEffect, useState } from 'react';
 import {
   Alert,
+  Button,
   Dimensions,
   Image,
   ScrollView,
@@ -11,8 +13,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AppContext } from '../components/AppContext';
 import { v4 as uuidv4 } from 'uuid';
+import { AppContext } from '../components/AppContext';
+import { RootStackParamList } from '../components/navigations/RootStack';
 
 const { width } = Dimensions.get('window');
 
@@ -23,7 +26,9 @@ const getRandomColor = () => {
   return color;
 };
 
-export default function Heroes() {
+type Props = NativeStackScreenProps<RootStackParamList, 'Heroes'>;
+
+export default function Heroes(props: Props) {
   const { db } = useContext(AppContext);
   const [name, setName] = useState('');
   const [heroes, setHeroes] = useState([]);
@@ -119,6 +124,7 @@ export default function Heroes() {
           </View>
         ))}
       </ScrollView>
+      <Button testID="btn-navigate" onPress={(): void => props.navigation.navigate('Home')} title="Back home" />
     </View>
   );
 }

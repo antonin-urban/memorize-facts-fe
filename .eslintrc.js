@@ -3,7 +3,15 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react/jsx-runtime', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
+  ],
   overrides: [],
   parserOptions: {
     ecmaVersion: 'latest',
@@ -12,7 +20,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: ['react', 'react-native', 'prettier'],
+  plugins: ['react', 'react-native', 'prettier', '@typescript-eslint', 'import'],
   rules: {
     'prettier/prettier': [
       'warn',
@@ -20,6 +28,18 @@ module.exports = {
         printWidth: 120,
         singleQuote: true,
         trailingComma: 'all',
+      },
+    ],
+    'no-unused-vars': 'off',
+    'no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': ['Error'],
+    'import/order': [
+      'warn',
+      {
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
       },
     ],
   },
@@ -60,5 +80,6 @@ module.exports = {
       'Hyperlink',
       { name: 'Link', linkAttribute: 'to' },
     ],
+    'import/ignore': ['react-native'],
   },
 };

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { RxDatabase } from 'rxdb';
 
-export type AppContextType = {
+type AppContextType = {
   db: RxDatabase;
 };
 

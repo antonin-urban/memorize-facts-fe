@@ -21,21 +21,31 @@ const storage = getRxStoragePouch('react-native-sqlite');
 
 const isDevelopment = process.env.NODE_ENV !== 'prod' || process.env.DEBUG_PROD === 'true';
 
-export async function initialize(): Promise<RxDatabase> {
-  let database: RxDatabase;
+let database: RxDatabase;
+
+export async function initialize(databaseInstance: RxDatabase): Promise<RxDatabase> {
+  if (databaseInstance) {
+    return databaseInstance;
+  }
 
   if (isDevelopment) {
-    await removeRxDatabase(DB_NAME, storage);
-    const { RxDBDevModePlugin } = await import('rxdb/plugins/dev-mode');
-    addRxPlugin(RxDBDevModePlugin);
+    try {
+      await removeRxDatabase(DB_NAME, storage);
+      const { RxDBDevModePlugin } = await import('rxdb/plugins/dev-mode');
+      addRxPlugin(RxDBDevModePlugin);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   try {
-    database = await createRxDatabase({
-      name: 'memorize-facts-db',
-      storage,
-      multiInstance: false,
-    });
+    if (!database) {
+      database = await createRxDatabase({
+        name: 'memorize-facts-db',
+        storage,
+        multiInstance: false, // must be false for react-native
+      });
+    }
   } catch (err) {
     console.log('ERROR CREATING DATABASE', err);
   }
