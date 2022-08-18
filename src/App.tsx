@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppContext } from './components/AppContext';
-import RootStack from './components/navigations/RootStack';
+import RootTabNavigatior from './components/navigations/RootTabNavigator';
 import { initialize } from './db/database';
 
 function App(): React.ReactElement {
@@ -16,7 +16,7 @@ function App(): React.ReactElement {
 
   return (
     <AppContext.Provider value={{ db }}>
-      <RootStack />
+      <RootTabNavigatior />
     </AppContext.Provider>
   );
 }
