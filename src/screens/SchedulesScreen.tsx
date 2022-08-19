@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
-import { RouteNames, ScrenProps } from '../components/navigations/interfaces';
+import { RouteNames, ScreenProps } from '../components/navigations/interfaces';
 
-function SchedulesScreen(props: ScrenProps<RouteNames.SchedulesScreen>): React.ReactElement {
+function SchedulesScreen(props: ScreenProps<RouteNames.SchedulesScreen>): React.ReactElement {
   console.log(props);
 
   return (

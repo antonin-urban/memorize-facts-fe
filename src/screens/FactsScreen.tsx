@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
-import { RouteNames, ScrenProps } from '../components/navigations/interfaces';
+import { RouteNames, ScreenProps } from '../components/navigations/interfaces';
 
-function FactsScreen(props: ScrenProps<RouteNames.FactsScreen>): React.ReactElement {
+function FactsScreen(props: ScreenProps<RouteNames.FactsScreen>): React.ReactElement {
   console.log(props);
 
   return (

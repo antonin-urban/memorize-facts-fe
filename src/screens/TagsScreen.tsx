@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
-import { ScrenProps, RouteNames } from '../components/navigations/interfaces';
+import { ScreenProps, RouteNames } from '../components/navigations/interfaces';
 
-function TagsScreen(props: ScrenProps<RouteNames.TagsScreen>): React.ReactElement {
+function TagsScreen(props: ScreenProps<RouteNames.TagsScreen>): React.ReactElement {
   console.log(props);
 
   return (

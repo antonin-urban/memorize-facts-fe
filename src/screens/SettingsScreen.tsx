@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
-import { RouteNames, ScrenProps } from '../components/navigations/interfaces';
+import { RouteNames, ScreenProps } from '../components/navigations/interfaces';
 
-function SettingsScreen(props: ScrenProps<RouteNames.SettingsScreen>): React.ReactElement {
+function SettingsScreen(props: ScreenProps<RouteNames.SettingsScreen>): React.ReactElement {
   console.log(props);
 
   return (

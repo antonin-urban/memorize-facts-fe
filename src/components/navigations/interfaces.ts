@@ -7,10 +7,12 @@ export enum RouteNames {
   TagsScreen = 'TagsScreen',
   SettingsScreen = 'SettingsScreen',
   HeroesScreen = 'HeroesScreen',
+  HomeStackNavigator = 'HomeStackNavigator',
 }
 
 export type RootParamListBase = {
   HomeScreen: undefined;
+  HomeStackNavigator: undefined;
   SchedulesScreen: undefined;
   FactsScreen: undefined;
   TagsScreen: undefined;
@@ -18,4 +20,8 @@ export type RootParamListBase = {
   HeroesScreen: undefined;
 };
 
-export type ScrenProps<T extends keyof RootParamListBase> = NativeStackScreenProps<RootParamListBase, T>;
+export type ScreenProps<T extends keyof RootParamListBase> = NativeStackScreenProps<RootParamListBase, T>;
+
+export type ScreenNavigationProp<T extends keyof RootParamListBase> = ScreenProps<T>['navigation'];
+
+export type ScreenRouteProp<T extends keyof RootParamListBase> = ScreenProps<T>['route'];

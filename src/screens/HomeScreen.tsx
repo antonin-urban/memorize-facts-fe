@@ -1,7 +1,8 @@
+import React from 'react';
 import { View, Text } from 'react-native';
-import { RouteNames, ScrenProps } from '../components/navigations/interfaces';
+import { RouteNames, ScreenProps } from '../components/navigations/interfaces';
 
-function HomeScreen(props: ScrenProps<RouteNames.HomeScreen>): React.ReactElement {
+function HomeScreen(props: ScreenProps<RouteNames.HomeScreen>): React.ReactElement {
   console.log(props);
 
   return (
