@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from '../components/AppContext';
-import { RouteNames } from '../components/navigations/interfaces';
+import { RootNavRouteNames } from '../components/navigations/types';
 
 const { width } = Dimensions.get('window');
 
@@ -27,7 +27,7 @@ const getRandomColor = () => {
   return color;
 };
 
-type Props = NativeStackScreenProps<ParamListBase, RouteNames.HeroesScreen>;
+type Props = NativeStackScreenProps<ParamListBase, RootNavRouteNames.HeroesScreen>;
 
 export default function HeroesScreen(props: Props) {
   const { db } = useContext(AppContext);

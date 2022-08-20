@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppContext } from './components/AppContext';
-import RootTabNavigatior from './components/navigations/RootTabNavigator';
+import RootTabNavigatior from './components/navigations/RootNavigator';
 import { initialize } from './db/database';
 
 function App(): React.ReactElement {

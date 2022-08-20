@@ -1,9 +1,8 @@
 import { View, Text } from 'react-native';
-import { RouteNames, ScreenProps } from '../components/navigations/interfaces';
+import { HomeNavRouteNames, HomeScreenProps } from '../components/navigations/types';
 
-function SettingsScreen(props: ScreenProps<RouteNames.SettingsScreen>): React.ReactElement {
-  console.log(props);
-
+function SettingsScreen({ navigation, route }: HomeScreenProps<HomeNavRouteNames.SettingsScreen>): React.ReactElement {
+  console.log(navigation, route);
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Settings page </Text>

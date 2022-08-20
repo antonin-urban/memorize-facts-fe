@@ -5,17 +5,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import FactsScreen from '../../screens/FactsScreen';
 import SchedulesScreen from '../../screens/SchedulesScreen';
 import TagsScreen from '../../screens/TagsScreen';
-import HomeStackNavigator from './HomeStackNavigator';
-import { RootParamListBase, RouteNames } from './interfaces';
+import HomeStackNavigator from './HomeNavigator';
+import { RootNavRouteNames, RootStackParamList } from './types';
 
-const Tab = createBottomTabNavigator<RootParamListBase>();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const screenOptions = ({ route }): BottomTabNavigationOptions => ({
-  headerShown: route.name !== RouteNames.HomeStackNavigator,
+  headerShown: route.name !== RootNavRouteNames.HomeStackNavigator,
   tabBarIcon: ({ focused, color, size }) => {
     let iconName;
 
-    if (route.name === RouteNames.HomeStackNavigator) {
+    if (route.name === RootNavRouteNames.HomeStackNavigator) {
       if (focused) {
         iconName = 'home';
       } else {
@@ -23,7 +23,7 @@ const screenOptions = ({ route }): BottomTabNavigationOptions => ({
       }
 
       return <IoinicIcons name={iconName} size={size} color={color} />;
-    } else if (route.name === RouteNames.SchedulesScreen) {
+    } else if (route.name === RootNavRouteNames.SchedulesScreen) {
       if (focused) {
         iconName = 'calendar';
       } else {
@@ -31,7 +31,7 @@ const screenOptions = ({ route }): BottomTabNavigationOptions => ({
       }
 
       return <IoinicIcons name={iconName} size={size} color={color} />;
-    } else if (route.name === RouteNames.FactsScreen) {
+    } else if (route.name === RootNavRouteNames.FactsScreen) {
       if (focused) {
         iconName = 'infocirlce';
       } else {
@@ -39,7 +39,7 @@ const screenOptions = ({ route }): BottomTabNavigationOptions => ({
       }
 
       return <AntIcons name={iconName} size={size} color={color} />;
-    } else if (route.name === RouteNames.TagsScreen) {
+    } else if (route.name === RootNavRouteNames.TagsScreen) {
       if (focused) {
         iconName = 'tag';
       } else {
@@ -56,28 +56,28 @@ function RootTabNavigatior(): React.ReactElement {
     <NavigationContainer>
       <Tab.Navigator screenOptions={screenOptions}>
         <Tab.Screen
-          name={RouteNames.HomeStackNavigator}
+          name={RootNavRouteNames.HomeStackNavigator}
           component={HomeStackNavigator}
           options={{
             title: 'Home',
           }}
         />
         <Tab.Screen
-          name={RouteNames.SchedulesScreen}
+          name={RootNavRouteNames.SchedulesScreen}
           component={SchedulesScreen}
           options={{
             title: 'Schedules',
           }}
         />
         <Tab.Screen
-          name={RouteNames.FactsScreen}
+          name={RootNavRouteNames.FactsScreen}
           component={FactsScreen}
           options={{
             title: 'Facts',
           }}
         />
         <Tab.Screen
-          name={RouteNames.TagsScreen}
+          name={RootNavRouteNames.TagsScreen}
           component={TagsScreen}
           options={{
             title: 'Tags',
