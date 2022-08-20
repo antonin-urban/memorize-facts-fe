@@ -1,19 +1,22 @@
-import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxdb';
-import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import * as SQLite from 'expo-sqlite';
 import SQLiteAdapterFactory from 'pouchdb-adapter-react-native-sqlite';
-import { Hero, HeroCollection, HeroDocument, heroSchema } from './hero/model';
+import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxdb';
+import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
+import { HeroCollection, heroSchema } from './hero/model';
+import { TagCollection, tagSchema } from './tag/model';
 
 const DB_NAME = 'memorize-facts-db';
 
-type MemorizeFactsDatabaseCollections = {
+export type MemorizeFactsDatabaseCollections = {
   heroes: HeroCollection;
+  tags: TagCollection;
 };
 
 const SQLiteAdapter = SQLiteAdapterFactory(SQLite);
 
 addPouchPlugin(SQLiteAdapter);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 addPouchPlugin(require('pouchdb-adapter-http'));
 addRxPlugin(RxDBQueryBuilderPlugin);
 
@@ -24,6 +27,7 @@ const isDevelopment = process.env.NODE_ENV !== 'prod' || process.env.DEBUG_PROD 
 let database: RxDatabase;
 
 export async function initialize(databaseInstance: RxDatabase): Promise<RxDatabase> {
+  console.log('isDevelopment', isDevelopment);
   if (databaseInstance) {
     return databaseInstance;
   }
@@ -51,9 +55,14 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
   }
 
   try {
-    await database.addCollections({
+    await database.addCollections<MemorizeFactsDatabaseCollections>({
       heroes: {
         schema: heroSchema,
+        //methods: heroDocMethods,
+        //statics: heroCollectionMethods,
+      },
+      tags: {
+        schema: tagSchema,
         //methods: heroDocMethods,
         //statics: heroCollectionMethods,
       },
