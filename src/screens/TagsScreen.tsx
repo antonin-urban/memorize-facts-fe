@@ -2,7 +2,6 @@ import AntIcons from '@expo/vector-icons/AntDesign';
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { AppContext } from '../components/AppContext';
-import { createDbErrorWarning } from '../helpers';
 
 function TagsScreen(): React.ReactElement {
   const { db } = useContext(AppContext);
@@ -25,18 +24,7 @@ function TagsScreen(): React.ReactElement {
   }, [db]);
 
   const addTag = async () => {
-    console.log('addTag: ' + name);
-
-    try {
-      await db.tags.insert({
-        name: name,
-      });
-    } catch (e) {
-      console.log(e);
-      if (e.code === 'COL19') {
-        createDbErrorWarning('Tag already exists', () => setName(''));
-      }
-    }
+    await db.tags.insertRecord({ name }, () => setName(''));
   };
 
   return (

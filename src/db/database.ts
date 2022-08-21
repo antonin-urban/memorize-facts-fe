@@ -4,7 +4,7 @@ import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxd
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { HeroCollection, heroSchema } from './hero/model';
-import { TagCollection, tagSchema } from './tag/model';
+import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
 
 const DB_NAME = 'memorize-facts-db';
 
@@ -63,8 +63,8 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       },
       tags: {
         schema: tagSchema,
-        //methods: heroDocMethods,
-        //statics: heroCollectionMethods,
+        //methods: tagCollectionMethods,
+        statics: tagCollectionMethods,
       },
     });
   } catch (err) {
