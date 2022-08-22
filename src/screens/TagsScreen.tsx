@@ -1,12 +1,19 @@
-import AntIcons from '@expo/vector-icons/AntDesign';
+import { Button, Icon, ListItem, Overlay } from '@rneui/themed';
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { AppContext } from '../components/AppContext';
+import TagForm from '../components/tags/TagForm';
+import { createDeleteAlert } from '../db/helpers';
+import { Tag, TagDocument } from '../db/tag/model';
 
 function TagsScreen(): React.ReactElement {
   const { db } = useContext(AppContext);
-  const [name, setName] = useState('');
+  //const [name, setName] = useState('');
   const [tags, setTags] = useState([]);
+  const [editVisible, setEditVisible] = useState(false);
+  const [editedObject, setEditedObject] = useState({
+    name: '',
+  } as TagDocument);
 
   useEffect(() => {
     let sub;
@@ -23,37 +30,95 @@ function TagsScreen(): React.ReactElement {
     };
   }, [db]);
 
-  const addTag = async () => {
-    await db.tags.insertRecord({ name }, () => setName(''));
+  const addTag = async (tag: Tag): Promise<boolean> => {
+    return await db.tags.insertTag(tag);
+  };
+
+  const removeTag = async (tag: Tag): Promise<boolean> => {
+    return db.tags.deleteTag(tag);
+  };
+
+  const editTag = async (tag: Tag, data: Tag): Promise<boolean> => {
+    return db.tags.updateTag(tag, data);
+  };
+
+  const toggleEditOverlay = (tag?: TagDocument) => {
+    console.debug('toggle edit', tag);
+    if (tag) {
+      setEditedObject(tag);
+    }
+    setEditVisible(!editVisible);
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Tags page </Text>
+    <View style={{ paddingTop: 10, flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }}>
       <View>
-        <TextInput
-          value={name}
-          onChangeText={(name) => setName(name)}
-          placeholder="Type to add a tag..."
-          onSubmitEditing={async () => {
-            await addTag();
-            setName('');
+        <TagForm
+          onSubmit={async (tagFormProps, formikBag) => {
+            const isWithoutError = await addTag({ ...tagFormProps });
+            if (isWithoutError) {
+              formikBag.resetForm();
+            }
           }}
         />
-        {name.length > 1 && (
-          <TouchableOpacity onPress={addTag}>
-            <AntIcons name="pluscircleo" />
-          </TouchableOpacity>
-        )}
       </View>
-      <ScrollView>
-        {tags.length === 0 && <Text>No tags to display ...</Text>}
-        {tags.map((tag, index) => (
-          <View key={index}>
-            <Text>{tag.get('name')}</Text>
+      <View
+        style={{
+          paddingTop: 10,
+        }}
+      >
+        {tags.map((item: TagDocument, i) => (
+          <View key={i} style={{ paddingTop: 10 }}>
+            <ListItem.Swipeable
+              rightContent={(reset) => (
+                <Button
+                  title="Delete"
+                  onPress={async () => {
+                    createDeleteAlert(item.name, () => removeTag(item));
+                    reset();
+                  }}
+                  icon={{ name: 'delete', color: 'white' }}
+                  buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
+                />
+              )}
+              leftContent={(reset) => (
+                <Button
+                  title="Edit"
+                  onPress={async () => {
+                    toggleEditOverlay(item);
+                    reset();
+                  }}
+                  icon={{ name: 'edit', color: 'white' }}
+                  buttonStyle={{ minHeight: '100%' }}
+                />
+              )}
+              onLongPress={() => console.log('long press', item.name)}
+            >
+              <Icon name="label" />
+              <ListItem.Content>
+                <ListItem.Title>{item.name}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem.Swipeable>
           </View>
         ))}
-      </ScrollView>
+      </View>
+      <View>
+        <Overlay isVisible={editVisible} onBackdropPress={toggleEditOverlay}>
+          <TagForm
+            onSubmit={async (tagFormProps, formikBag) => {
+              console.log('submit');
+              console.log(editedObject);
+              const isWithoutError = await editTag(editedObject, { ...tagFormProps });
+              if (isWithoutError) {
+                formikBag.resetForm();
+              }
+            }}
+            initialValues={{
+              name: editedObject.name,
+            }}
+          />
+        </Overlay>
+      </View>
     </View>
   );
 }

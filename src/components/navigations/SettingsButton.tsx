@@ -2,7 +2,7 @@ import IonicIcons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '@react-navigation/native';
 import { HomeScreenProps, HomeStackNavParamList, HomeNavRouteNames } from './types';
 
-function SettingsButton<T extends keyof HomeStackNavParamList>({ navigation }: HomeScreenProps<T>): JSX.Element {
+function SettingsButton<T extends keyof HomeStackNavParamList>({ navigation }: HomeScreenProps<T>): React.ReactElement {
   const colors = useTheme().colors;
 
   return (

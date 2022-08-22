@@ -32,21 +32,77 @@ export type TagDocument = RxDocument<Tag>;
 
 // we declare one static ORM-method for the collection
 type TagCollectionMethods = {
-  insertRecord(this: TagCollection, data: Tag, callback?: () => void): Promise<void>;
+  insertTag(this: TagCollection, data: Tag): Promise<boolean>;
+  deleteTag(this: TagCollection, data: Tag): Promise<boolean>;
+  updateTag(this: TagCollection, tag: Tag, data: Tag): Promise<boolean>;
 };
 
 export const tagCollectionMethods: TagCollectionMethods = {
-  insertRecord: async function (this: TagCollection, data: Tag, callback?: () => void) {
+  insertTag: async function (this: TagCollection, data: Tag) {
     if (data?.name) {
       try {
-        console.log('insertRecord', data);
         await this.insert(data);
-        return;
+        return true;
       } catch (e) {
-        handleDbError(e, callback);
+        handleDbError(e);
+        return false;
       }
     } else {
-      createDbErrorWarning('Name must be set', callback);
+      createDbErrorWarning('Name must be set');
+      return false;
+    }
+  },
+
+  deleteTag: async function (this: TagCollection, data: Tag) {
+    if (data?.name) {
+      try {
+        console.debug('deleteTag', data);
+        const found = this.findOne({
+          selector: {
+            name: data.name,
+          },
+        });
+        if (found) {
+          await found.remove();
+          return true;
+        } else {
+          createDbErrorWarning('Tag not found');
+          return false;
+        }
+      } catch (e) {
+        handleDbError(e);
+        return false;
+      }
+    } else {
+      createDbErrorWarning('Name must be set');
+      return false;
+    }
+  },
+
+  updateTag: async function (this: TagCollection, tag: Tag, data: Tag) {
+    if (tag?.name) {
+      try {
+        console.debug('updateTag', tag);
+        const found = this.findOne({
+          selector: {
+            name: tag.name,
+          },
+        });
+        console.debug('found', found);
+        if (found) {
+          await found.update(data);
+          return true;
+        } else {
+          createDbErrorWarning('Tag not found');
+          return false;
+        }
+      } catch (e) {
+        handleDbError(e);
+        return false;
+      }
+    } else {
+      createDbErrorWarning('Name must be set');
+      return false;
     }
   },
 };

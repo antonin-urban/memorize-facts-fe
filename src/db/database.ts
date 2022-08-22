@@ -3,6 +3,7 @@ import SQLiteAdapterFactory from 'pouchdb-adapter-react-native-sqlite';
 import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxdb';
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
+import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { HeroCollection, heroSchema } from './hero/model';
 import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
 
@@ -19,6 +20,7 @@ addPouchPlugin(SQLiteAdapter);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 addPouchPlugin(require('pouchdb-adapter-http'));
 addRxPlugin(RxDBQueryBuilderPlugin);
+addRxPlugin(RxDBUpdatePlugin);
 
 const storage = getRxStoragePouch('react-native-sqlite');
 
@@ -38,7 +40,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       const { RxDBDevModePlugin } = await import('rxdb/plugins/dev-mode');
       addRxPlugin(RxDBDevModePlugin);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 
@@ -51,7 +53,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       });
     }
   } catch (err) {
-    console.log('ERROR CREATING DATABASE', err);
+    console.error('ERROR CREATING DATABASE', err);
   }
 
   try {
@@ -68,7 +70,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       },
     });
   } catch (err) {
-    console.log('ERROR CREATING COLLECTIONS', err);
+    console.error('ERROR CREATING COLLECTIONS', err);
   }
 
   try {
@@ -76,7 +78,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       database.$.subscribe((changeEvent) => console.log(changeEvent)); // turn on logging via observable
     }
   } catch (err) {
-    console.log('ERROR RUNNING POST INIT DB ACTIONS', err);
+    console.error('ERROR RUNNING POST INIT DB ACTIONS', err);
   }
 
   return database;
