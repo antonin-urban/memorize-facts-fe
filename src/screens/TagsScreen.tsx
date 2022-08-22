@@ -30,7 +30,7 @@ function TagsScreen(): React.ReactElement {
     };
   }, [db]);
 
-  const addTag = async (tag: Tag): Promise<boolean> => {
+  const addTag = async (tag: Omit<Tag, 'id'>): Promise<boolean> => {
     return await db.tags.insertTag(tag);
   };
 
@@ -38,7 +38,7 @@ function TagsScreen(): React.ReactElement {
     return db.tags.deleteTag(tag);
   };
 
-  const editTag = async (tag: Tag, data: Tag): Promise<boolean> => {
+  const editTag = async (tag: Tag, data: Omit<Tag, 'id'>): Promise<boolean> => {
     return db.tags.updateTag(tag, data);
   };
 
@@ -52,6 +52,33 @@ function TagsScreen(): React.ReactElement {
 
   return (
     <View style={{ paddingTop: 10, flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }}>
+      <Overlay
+        overlayStyle={{
+          width: '80%',
+          height: '20%',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}
+        fullScreen={false}
+        isVisible={editVisible}
+        onBackdropPress={toggleEditOverlay}
+      >
+        <View>
+          <TagForm
+            onSubmit={async (tagFormProps) => {
+              console.log('submit');
+              console.log(editedObject);
+              const isWithoutError = await editTag(editedObject, { ...tagFormProps });
+              if (isWithoutError) {
+                toggleEditOverlay();
+              }
+            }}
+            initialValues={{
+              name: editedObject.name,
+            }}
+          />
+        </View>
+      </Overlay>
       <View>
         <TagForm
           onSubmit={async (tagFormProps, formikBag) => {
@@ -101,23 +128,6 @@ function TagsScreen(): React.ReactElement {
             </ListItem.Swipeable>
           </View>
         ))}
-      </View>
-      <View>
-        <Overlay isVisible={editVisible} onBackdropPress={toggleEditOverlay}>
-          <TagForm
-            onSubmit={async (tagFormProps, formikBag) => {
-              console.log('submit');
-              console.log(editedObject);
-              const isWithoutError = await editTag(editedObject, { ...tagFormProps });
-              if (isWithoutError) {
-                formikBag.resetForm();
-              }
-            }}
-            initialValues={{
-              name: editedObject.name,
-            }}
-          />
-        </Overlay>
       </View>
     </View>
   );
