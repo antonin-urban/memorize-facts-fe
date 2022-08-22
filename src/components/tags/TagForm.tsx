@@ -1,8 +1,9 @@
 import { Button, Input, Text } from '@rneui/themed';
 import { Formik, FormikBag } from 'formik';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as yup from 'yup';
 import { TagProperties } from '../../db/tag/model';
+import { FONT_BIG, FONT_MEDIUM } from '../../styleConstants';
 
 interface TagFormValues {
   name: string;
@@ -29,9 +30,10 @@ function TagForm({ onSubmit, initialValues = defaultInitialValues }: TagFormProp
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={TagValidationSchema}>
       {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
-        <View>
+        <View style={styles.formView}>
           <Input
-            label={<Text>Tag name:</Text>}
+            style={styles.input}
+            label={<Text style={styles.label}>Tag name</Text>}
             onChangeText={handleChange('name')}
             onBlur={handleBlur('name')}
             value={values.name}
@@ -40,12 +42,26 @@ function TagForm({ onSubmit, initialValues = defaultInitialValues }: TagFormProp
           {
             // https://github.com/gimmickless/iyiye-native-app/issues/5
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            <Button onPress={handleSubmit as any} title="Submit" />
+            <Button size="lg" style={styles.submitButton} onPress={handleSubmit as any} title="Submit" />
           }
         </View>
       )}
     </Formik>
   );
 }
+
+const styles = StyleSheet.create({
+  formView: {
+    marginBottom: 30,
+  },
+  submitButton: {},
+  label: {
+    fontSize: FONT_BIG,
+    fontWeight: '500',
+  },
+  input: {
+    fontSize: FONT_MEDIUM,
+  },
+});
 
 export default TagForm;

@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import FactsScreen from '../../screens/FactsScreen';
 import SchedulesScreen from '../../screens/SchedulesScreen';
 import TagsScreen from '../../screens/TagsScreen';
+import { FONT_EXTRA_BIG } from '../../styleConstants';
 import HomeStackNavigator from './HomeNavigator';
 import { RootNavRouteNames, RootStackParamList } from './types';
 
@@ -12,6 +13,10 @@ const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const screenOptions = ({ route }): BottomTabNavigationOptions => ({
   headerShown: route.name !== RootNavRouteNames.HomeStackNavigator,
+  headerTitleStyle: {
+    fontWeight: 'bold',
+    fontSize: FONT_EXTRA_BIG,
+  },
   tabBarIcon: ({ focused, color, size }) => {
     let iconName;
 

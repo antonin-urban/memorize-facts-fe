@@ -43,6 +43,8 @@ type TagCollectionMethods = {
   insertTag(this: TagCollection, data: Omit<Tag, 'id'>): Promise<boolean>;
   deleteTag(this: TagCollection, data: Tag): Promise<boolean>;
   updateTag(this: TagCollection, tag: Tag, data: Omit<Tag, 'id'>): Promise<boolean>;
+  getTagByName(this: TagCollection, name: string): Promise<TagDocument | null>;
+  getTag(this: TagCollection, id: string): Promise<TagDocument | null>;
 };
 
 export const tagCollectionMethods: TagCollectionMethods = {
@@ -50,13 +52,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
     console.log(data.name);
     if (data?.name) {
       try {
-        const query = this.findOne({
-          selector: {
-            name: data.name,
-          },
-        });
-
-        const found = (await query.exec()) as TagDocument;
+        const found = await this.getTagByName(data.name);
 
         if (found?.name) {
           createDbErrorWarning('Tag already exists');
@@ -80,14 +76,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
 
   deleteTag: async function (this: TagCollection, data: Tag) {
     try {
-      const query = this.findOne({
-        selector: {
-          id: data.id,
-        },
-      });
-
-      const found = (await query.exec()) as TagDocument;
-
+      const found = await this.getTag(data.id);
       if (found) {
         await found.remove();
         return true;
@@ -104,16 +93,15 @@ export const tagCollectionMethods: TagCollectionMethods = {
   updateTag: async function (this: TagCollection, tag: Tag, data: Omit<Tag, 'id'>) {
     if (tag?.name) {
       try {
-        console.debug('updateTag', tag);
-        const query = this.findOne({
-          selector: {
-            id: tag.id,
-          },
-        });
+        const found = await this.getTag(tag.id);
 
-        const found = (await query.exec()) as TagDocument;
+        if (found?.id) {
+          const foundByName = await this.getTagByName(data.name);
+          if (foundByName) {
+            createDbErrorWarning('Tag already exists');
+            return false;
+          }
 
-        if (found.id) {
           await found.update({
             $set: {
               ...data,
@@ -132,5 +120,39 @@ export const tagCollectionMethods: TagCollectionMethods = {
       createDbErrorWarning('Name must be set');
       return false;
     }
+  },
+
+  getTag: async function (this: TagCollection, id: string): Promise<TagDocument | null> {
+    const query = this.findOne({
+      selector: {
+        id,
+      },
+    });
+
+    try {
+      const result_1 = await query.exec();
+      return result_1;
+    } catch (e) {
+      handleDbError(e);
+      return null;
+    }
+  },
+
+  getTagByName: async function (this: TagCollection, name: string): Promise<TagDocument | null> {
+    const query = this.findOne({
+      selector: {
+        name,
+      },
+    });
+
+    return query
+      .exec()
+      .then((result: TagDocument) => {
+        return result;
+      })
+      .catch((e) => {
+        handleDbError(e);
+        return null;
+      });
   },
 };
