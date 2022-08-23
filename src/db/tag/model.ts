@@ -129,13 +129,15 @@ export const tagCollectionMethods: TagCollectionMethods = {
       },
     });
 
-    try {
-      const result_1 = await query.exec();
-      return result_1;
-    } catch (e) {
-      handleDbError(e);
-      return null;
-    }
+    return query
+      .exec()
+      .then((result: TagDocument) => {
+        return result;
+      })
+      .catch((e) => {
+        handleDbError(e);
+        return null;
+      });
   },
 
   getTagByName: async function (this: TagCollection, name: string): Promise<TagDocument | null> {

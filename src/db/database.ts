@@ -4,6 +4,7 @@ import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxd
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
+import { FactCollection, factCollectionMethods, factDocumentMethods, factSchema } from './fact/model';
 import { HeroCollection, heroSchema } from './hero/model';
 import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
 
@@ -12,6 +13,7 @@ const DB_NAME = 'memorize-facts-db';
 export type MemorizeFactsDatabaseCollections = {
   heroes: HeroCollection;
   tags: TagCollection;
+  facts: FactCollection;
 };
 
 const SQLiteAdapter = SQLiteAdapterFactory(SQLite);
@@ -67,6 +69,11 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
         schema: tagSchema,
         //methods: tagCollectionMethods,
         statics: tagCollectionMethods,
+      },
+      facts: {
+        schema: factSchema,
+        methods: factDocumentMethods,
+        statics: factCollectionMethods,
       },
     });
   } catch (err) {
