@@ -1,6 +1,6 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import handleDbError, { createDbErrorWarning } from '../helpers';
+import { createDbErrorWarning, handleDbError } from '../helpers';
 import { Tag } from '../tag/model';
 
 export type Fact = {
@@ -62,6 +62,7 @@ export type FactDocument = RxDocument<Fact, FactDocMethods>;
 type FactDocMethods = {
   addTag(this: FactDocument, tagId: string): Promise<boolean>;
   removeTag(this: FactDocument, tagId: string): Promise<boolean>;
+  populateTags(this: FactDocument): Promise<Tag[]>;
 };
 
 type FactCollectionMethods = {
@@ -100,6 +101,15 @@ export const factDocumentMethods: FactDocMethods = {
     } catch (e) {
       handleDbError(e);
       return false;
+    }
+  },
+
+  populateTags: async function (this: FactDocument): Promise<Tag[]> {
+    try {
+      return this.populate('tags');
+    } catch (e) {
+      handleDbError(e);
+      return [];
     }
   },
 };
@@ -154,7 +164,7 @@ export const factCollectionMethods: FactCollectionMethods = {
 
         if (found?.id) {
           const foundByName = await this.getFactByName(data.name);
-          if (foundByName) {
+          if (foundByName && foundByName.id !== fact.id) {
             createDbErrorWarning('Fact already exists');
             return false;
           }

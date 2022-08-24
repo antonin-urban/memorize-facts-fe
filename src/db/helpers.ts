@@ -10,7 +10,7 @@ enum ERROR_MESSAGES {
   'UNKNOWN' = 'Unknown error',
 }
 
-export default function handleDbError(e: RxError): void {
+export function handleDbError(e: RxError): void {
   if (e.code) {
     console.error(e.code);
     switch (e.code) {

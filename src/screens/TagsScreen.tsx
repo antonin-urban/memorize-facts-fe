@@ -61,16 +61,13 @@ function TagsScreen(): React.ReactElement {
     <View style={styles.mainView}>
       <Overlay
         overlayStyle={{
-          width: '80%',
+          width: '90%',
           height: '30%',
-          flexDirection: 'column',
-          justifyContent: 'center',
         }}
-        fullScreen={false}
         isVisible={editVisible}
         onBackdropPress={toggleEditOverlay}
       >
-        <View>
+        <View style={styles.overlayView}>
           <TagForm
             onSubmit={async (tagFormProps) => {
               const isWithoutError = await editTag(editedObject, { ...trimValues(tagFormProps) });
@@ -81,10 +78,18 @@ function TagsScreen(): React.ReactElement {
             initialValues={{
               name: editedObject.name,
             }}
+            isUpdate={true}
+            onCancel={toggleEditOverlay}
+            onDelete={async () => {
+              await createDeleteAlert(editedObject.name, async () => {
+                removeTag(editedObject);
+                toggleEditOverlay();
+              });
+            }}
           />
         </View>
       </Overlay>
-      <View>
+      <View style={styles.formView}>
         <TagForm
           onSubmit={async (tagFormProps, formikBag) => {
             const isWithoutError = await addTag({ ...trimValues(tagFormProps) });
@@ -94,63 +99,76 @@ function TagsScreen(): React.ReactElement {
           }}
         />
       </View>
-      <ScrollView>
-        {tags.length ? (
-          tags.map((item: TagDocument, i) => (
-            <View style={styles.listItemView} key={i}>
-              <ListItem.Swipeable
-                rightContent={(reset) => (
-                  <Button
-                    title="Delete"
-                    onPress={async () => {
-                      createDeleteAlert(item.name, () => removeTag(item));
-                      reset();
-                    }}
-                    icon={{ name: 'delete', color: 'white' }}
-                    buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
-                  />
-                )}
-                leftContent={(reset) => (
-                  <Button
-                    title="Edit"
-                    onPress={async () => {
-                      toggleEditOverlay(item);
-                      reset();
-                    }}
-                    icon={{ name: 'edit', color: 'white' }}
-                    buttonStyle={{ minHeight: '100%' }}
-                  />
-                )}
-                onLongPress={async () => {
-                  toggleEditOverlay(item);
-                }}
-              >
-                <View style={styles.listItemView}>
-                  <Icon name="label" style={styles.listItemIcon} size={25} />
-                  <ListItem.Content style={styles.listItemContent}>
-                    <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
-                  </ListItem.Content>
-                </View>
-              </ListItem.Swipeable>
+      <View style={styles.listContainerView}>
+        <ScrollView>
+          {tags.length ? (
+            tags.map((item: TagDocument, i) => (
+              <View style={styles.listItemView} key={i}>
+                <ListItem.Swipeable
+                  rightContent={(reset) => (
+                    <Button
+                      title="Delete"
+                      onPress={async () => {
+                        createDeleteAlert(item.name, () => removeTag(item));
+                        reset();
+                      }}
+                      icon={{ name: 'delete', color: 'white' }}
+                      buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
+                    />
+                  )}
+                  leftContent={(reset) => (
+                    <Button
+                      title="Edit"
+                      onPress={async () => {
+                        toggleEditOverlay(item);
+                        reset();
+                      }}
+                      icon={{ name: 'edit', color: 'white' }}
+                      buttonStyle={{ minHeight: '100%' }}
+                    />
+                  )}
+                  onPress={async () => {
+                    toggleEditOverlay(item);
+                  }}
+                >
+                  <View style={styles.listItemView}>
+                    <Icon name="tag" style={styles.listItemIcon} size={25} />
+                    <ListItem.Content style={styles.listItemContent}>
+                      <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
+                    </ListItem.Content>
+                  </View>
+                </ListItem.Swipeable>
+              </View>
+            ))
+          ) : (
+            <View style={styles.noContent}>
+              <Text style={styles.noContentText}>No tags found.</Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.noContent}>
-            <Text style={styles.noContentText}>No tags found.</Text>
-          </View>
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   mainView: {
-    paddingTop: 40,
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
+    marginTop: 0,
+    paddingTop: 0,
   },
+
+  formView: {
+    flex: 2,
+  },
+
+  listContainerView: {
+    flex: 5,
+  },
+
+  overlayView: { flex: 1 },
 
   listItemView: {
     paddingTop: 5,

@@ -1,11 +1,11 @@
-import { Icon, ListItem } from '@rneui/base';
-import { Overlay, Button, Text } from '@rneui/themed';
+import { Overlay, Button, Text, Icon, ListItem } from '@rneui/themed';
 import React, { useContext, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import FactForm from '../components/facts/FactForm';
 import { FactDocument, Fact } from '../db/fact/model';
 import { createDeleteAlert } from '../db/helpers';
+import { makeExcerpt } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function FactsScreen(): React.ReactElement {
@@ -14,6 +14,7 @@ function FactsScreen(): React.ReactElement {
   const [facts, setFacts] = useState([]);
   const [tags, setTags] = useState([]);
   const [editVisible, setEditVisible] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
   const [editedObject, setEditedObject] = useState({
     name: '',
   } as FactDocument);
@@ -61,11 +62,15 @@ function FactsScreen(): React.ReactElement {
   };
 
   const toggleEditOverlay = (fact?: FactDocument) => {
-    console.debug('toggle edit', fact);
     if (fact) {
       setEditedObject(fact);
     }
     setEditVisible(!editVisible);
+  };
+
+  const toggleAddOverlay = () => {
+    console.log('toggle add');
+    setAddVisible(!addVisible);
   };
 
   const trimValues = (data: Partial<Fact>): Partial<Omit<Fact, 'id'>> => {
@@ -79,22 +84,27 @@ function FactsScreen(): React.ReactElement {
     <View style={styles.mainView}>
       <Overlay
         overlayStyle={{
-          width: '80%',
-          height: '30%',
-          flexDirection: 'column',
-          justifyContent: 'center',
+          width: '90%',
+          height: '70%',
         }}
-        fullScreen={false}
         isVisible={editVisible}
         onBackdropPress={toggleEditOverlay}
       >
-        <View>
+        <View style={styles.overlayView}>
           <FactForm
             onSubmit={async (factFormProps) => {
               const isWithoutError = await editFact(editedObject, { ...trimValues(factFormProps), ...factFormProps });
               if (isWithoutError) {
+                console.log('editFactCancel');
                 toggleEditOverlay();
               }
+            }}
+            onCancel={() => toggleEditOverlay()}
+            onDelete={async () => {
+              await createDeleteAlert(editedObject.name, async () => {
+                removeFact(editedObject);
+                toggleEditOverlay();
+              });
             }}
             initialValues={{
               name: editedObject.name,
@@ -102,24 +112,39 @@ function FactsScreen(): React.ReactElement {
               tags: editedObject.tags,
             }}
             tags={tags}
+            isUpdate={true}
           />
         </View>
       </Overlay>
-      <View>
-        <FactForm
-          onSubmit={async (factFormProps, formikBag) => {
-            const isWithoutError = await addFact({
-              ...trimValues(factFormProps),
-              ...factFormProps,
-            });
-            if (isWithoutError) {
-              formikBag.resetForm();
-            }
-          }}
-          tags={tags}
-        />
-      </View>
-      <ScrollView>
+
+      <Overlay
+        overlayStyle={{
+          width: '90%',
+          height: '70%',
+        }}
+        isVisible={addVisible}
+        onBackdropPress={toggleAddOverlay}
+      >
+        <View style={styles.overlayView}>
+          <FactForm
+            onSubmit={async (factFormProps, formikBag) => {
+              const isWithoutError = await addFact({
+                ...trimValues(factFormProps),
+                ...factFormProps,
+              });
+              if (isWithoutError) {
+                formikBag.resetForm();
+                toggleAddOverlay();
+              }
+            }}
+            onCancel={toggleAddOverlay}
+            tags={tags}
+          />
+        </View>
+      </Overlay>
+
+      <Button onPress={toggleAddOverlay} title="Add new fact" />
+      <ScrollView style={styles.listView}>
         {facts.length ? (
           facts.map((item: FactDocument, i) => (
             <View style={styles.listItemView} key={i}>
@@ -146,14 +171,33 @@ function FactsScreen(): React.ReactElement {
                     buttonStyle={{ minHeight: '100%' }}
                   />
                 )}
-                onLongPress={async () => {
+                onPress={() => {
                   toggleEditOverlay(item);
                 }}
               >
                 <View style={styles.listItemView}>
-                  <Icon name="label" style={styles.listItemIcon} size={25} />
+                  <Icon name="notes" style={styles.listItemIcon} size={25} />
                   <ListItem.Content style={styles.listItemContent}>
                     <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
+                    <ListItem.Subtitle style={styles.listItemSubtitle}>
+                      {makeExcerpt(item.description, 50)}
+                    </ListItem.Subtitle>
+                    <ListItem.Subtitle style={styles.listItemTagSubtitle}>
+                      {tags.length ? (
+                        tags
+                          .filter((tag) => item.tags.includes(tag.id))
+                          .map((tag, i) => {
+                            return (
+                              <View key={i} style={styles.listItemSubtitleTag}>
+                                <Icon name="tag" size={FONT_SMALL} />
+                                <Text>{tag.name}</Text>
+                              </View>
+                            );
+                          })
+                      ) : (
+                        <Text>No tags</Text>
+                      )}
+                    </ListItem.Subtitle>
                   </ListItem.Content>
                 </View>
               </ListItem.Swipeable>
@@ -171,11 +215,17 @@ function FactsScreen(): React.ReactElement {
 
 const styles = StyleSheet.create({
   mainView: {
-    paddingTop: 40,
+    marginTop: 10,
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
   },
+
+  formView: { flex: 1 },
+
+  listView: { flex: 1 },
+
+  overlayView: { flex: 1 },
 
   listItemView: {
     paddingTop: 5,
@@ -193,9 +243,24 @@ const styles = StyleSheet.create({
 
   listItemTitle: { paddingRight: 15, fontSize: FONT_MEDIUM },
 
+  listItemSubtitle: { paddingRight: 15, paddingTop: 10, fontSize: FONT_MEDIUM },
+
+  listItemTagSubtitle: { paddingRight: 15, paddingTop: 10, marginTop: 20, marginBottom: 0 },
+
+  listItemSubtitleTag: {
+    paddingRight: 10,
+    paddingTop: 0,
+    marginTop: 0,
+    alignItems: 'center',
+    flexDirection: 'row',
+    fontSize: FONT_SMALL,
+    height: FONT_SMALL + 5,
+  },
+
   noContent: {
     justifyContent: 'center',
     flexDirection: 'row',
+    marginTop: 20,
   },
 
   noContentText: {

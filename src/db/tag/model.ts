@@ -1,6 +1,6 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import handleDbError, { createDbErrorWarning } from '../helpers';
+import { createDbErrorWarning, handleDbError } from '../helpers';
 
 export type Tag = {
   id: string;
