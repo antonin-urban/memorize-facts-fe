@@ -5,6 +5,7 @@ import { AppContext } from '../components/AppContext';
 import ScheduleForm from '../components/schedules/ScheduleForm';
 import { createDeleteAlert } from '../db/helpers';
 import { ScheduleDocument, Schedule } from '../db/schedule/model';
+import { convertMinutesToStringTime } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function SchedulesScreen(): React.ReactElement {
@@ -158,10 +159,12 @@ function SchedulesScreen(): React.ReactElement {
                 }}
               >
                 <View style={styles.listItemView}>
-                  <Icon name="notes" style={styles.listItemIcon} size={25} />
+                  <Icon name="calendar-today" style={styles.listItemIcon} size={25} />
                   <ListItem.Content style={styles.listItemContent}>
                     <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
-                    <ListItem.Subtitle style={styles.listItemSubtitle}>{item.type}</ListItem.Subtitle>
+                    <ListItem.Subtitle style={styles.listItemSubtitle}>
+                      {convertMinutesToStringTime(item.interval)}
+                    </ListItem.Subtitle>
                   </ListItem.Content>
                 </View>
               </ListItem.Swipeable>

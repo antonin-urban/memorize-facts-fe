@@ -1,6 +1,7 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
 import { createDbErrorWarning, handleDbError } from '../helpers';
+import { Schedule } from '../schedule/model';
 import { Tag } from '../tag/model';
 
 export type Fact = {
@@ -10,6 +11,7 @@ export type Fact = {
   deadline?: Date;
   active?: boolean;
   tags?: string[];
+  schedules?: string[];
 };
 
 export const FactProperties = {
@@ -51,6 +53,13 @@ export const factSchema: RxJsonSchema<Fact> = {
         type: 'string',
       },
     },
+    schedules: {
+      type: 'array',
+      ref: 'schedules',
+      items: {
+        type: 'string',
+      },
+    },
   },
   indexes: ['name'],
   required: ['name', 'description'],
@@ -63,6 +72,9 @@ type FactDocMethods = {
   addTag(this: FactDocument, tagId: string): Promise<boolean>;
   removeTag(this: FactDocument, tagId: string): Promise<boolean>;
   populateTags(this: FactDocument): Promise<Tag[]>;
+  addSchedule(this: FactDocument, scheduleId: string): Promise<boolean>;
+  removeSchedule(this: FactDocument, scheduleId: string): Promise<boolean>;
+  populateSchedules(this: FactDocument): Promise<Schedule[]>;
 };
 
 type FactCollectionMethods = {
@@ -75,7 +87,6 @@ type FactCollectionMethods = {
 
 export const factDocumentMethods: FactDocMethods = {
   addTag: async function (this: FactDocument, tagId: string): Promise<boolean> {
-    console.log(tagId);
     try {
       await this.update({
         $set: {
@@ -107,6 +118,44 @@ export const factDocumentMethods: FactDocMethods = {
   populateTags: async function (this: FactDocument): Promise<Tag[]> {
     try {
       return this.populate('tags');
+    } catch (e) {
+      handleDbError(e);
+      return [];
+    }
+  },
+
+  addSchedule: async function (this: FactDocument, scheduleId: string): Promise<boolean> {
+    try {
+      await this.update({
+        $set: {
+          schedules: [...this.tags, scheduleId],
+        },
+      });
+      return true;
+    } catch (e) {
+      handleDbError(e);
+      return false;
+    }
+  },
+
+  removeSchedule: async function (this: FactDocument, scheduleId: string): Promise<boolean> {
+    try {
+      const newSchedules = this.tags.filter((tag) => tag !== scheduleId);
+      await this.update({
+        $set: {
+          tags: [...newSchedules],
+        },
+      });
+      return true;
+    } catch (e) {
+      handleDbError(e);
+      return false;
+    }
+  },
+
+  populateSchedules: async function (this: FactDocument): Promise<Schedule[]> {
+    try {
+      return this.populate('schedules');
     } catch (e) {
       handleDbError(e);
       return [];

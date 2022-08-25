@@ -13,6 +13,7 @@ function FactsScreen(): React.ReactElement {
   //const [name, setName] = useState('');
   const [facts, setFacts] = useState([]);
   const [tags, setTags] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [editVisible, setEditVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
   const [editedObject, setEditedObject] = useState({
@@ -42,6 +43,21 @@ function FactsScreen(): React.ReactElement {
         .sort({ name: 'asc' })
         .$.subscribe((rxdbTags) => {
           setTags(rxdbTags);
+        });
+    }
+    return () => {
+      if (sub && sub.unsubscribe) sub.unsubscribe();
+    };
+  }, [db]);
+
+  useEffect(() => {
+    let sub;
+    if (db && db.schedules) {
+      sub = db.schedules
+        .find()
+        .sort({ name: 'asc' })
+        .$.subscribe((rxdbTags) => {
+          setSchedules(rxdbTags);
         });
     }
     return () => {
@@ -110,8 +126,10 @@ function FactsScreen(): React.ReactElement {
               name: editedObject.name,
               description: editedObject.description,
               tags: editedObject.tags,
+              schedules: editedObject.schedules,
             }}
             tags={tags}
+            schedules={schedules}
             isUpdate={true}
           />
         </View>
@@ -139,6 +157,7 @@ function FactsScreen(): React.ReactElement {
             }}
             onCancel={toggleAddOverlay}
             tags={tags}
+            schedules={schedules}
           />
         </View>
       </Overlay>
@@ -198,6 +217,28 @@ function FactsScreen(): React.ReactElement {
                         <Text>No tags</Text>
                       )}
                     </ListItem.Subtitle>
+                    <ListItem.Subtitle style={styles.listItemScheduleSubtitle}>
+                      {schedules.length ? (
+                        schedules
+                          .filter((schedule) => item.schedules.includes(schedule.id))
+                          .map((schedule, i) => {
+                            return (
+                              <View key={i} style={styles.listItemSubtitleTag}>
+                                <Icon name="calendar-today" size={FONT_SMALL} />
+                                <Text
+                                  style={{
+                                    paddingLeft: 2,
+                                  }}
+                                >
+                                  {schedule.name}
+                                </Text>
+                              </View>
+                            );
+                          })
+                      ) : (
+                        <Text>No tags</Text>
+                      )}
+                    </ListItem.Subtitle>
                   </ListItem.Content>
                 </View>
               </ListItem.Swipeable>
@@ -231,7 +272,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     flexDirection: 'row',
     marginTop: 5,
-    marginBottom: 5,
   },
 
   listItemContent: {
@@ -246,6 +286,8 @@ const styles = StyleSheet.create({
   listItemSubtitle: { paddingRight: 15, paddingTop: 10, fontSize: FONT_MEDIUM },
 
   listItemTagSubtitle: { paddingRight: 15, paddingTop: 10, marginTop: 20, marginBottom: 0 },
+
+  listItemScheduleSubtitle: {},
 
   listItemSubtitleTag: {
     paddingRight: 10,

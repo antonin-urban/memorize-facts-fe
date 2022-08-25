@@ -1,11 +1,17 @@
-import { Button, Input, ListItem, Text } from '@rneui/themed';
+import { Button, Input, Text } from '@rneui/themed';
 import { Formik, FormikBag } from 'formik';
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
+import { createDbErrorWarning } from '../../db/helpers';
 import { ScheduleProperties, ScheduleDocument, ScheduleType } from '../../db/schedule/model';
+import {
+  convertMinutesToStringTime,
+  convertHoursAndMinutesToMinutes,
+  convertMinutesToHoursAndMinutes,
+} from '../../helpers';
 import { FONT_BIG, FONT_MEDIUM, FONT_SMALL } from '../../styleConstants';
 import FormHeaderWithButtons from '../FormHeaderWithButtons';
 
@@ -32,12 +38,18 @@ const ScheduleValidationSchema = yup.object().shape({
     .min(ScheduleProperties.name.minLength, ({ min }) => `Schedule name must be at least ${min} characters`)
     .max(ScheduleProperties.name.maxLenth, ({ max }) => `Schedule name must be maximum ${max} characters`)
     .required('Schedule name is required'),
+
+  interval: yup.number().when('type', {
+    is: ScheduleType.NOTIFY_AT,
+    then: yup.number().required('Must enter valid interval'),
+    otherwise: yup.number().notRequired(),
+  }),
 });
 
 const defaultInitialValues: ScheduleFormValues = {
   name: '',
-  type: ScheduleType.NOTIFY_AT,
-  interval: 0, // in minutes, with ScheduleType.NOTIFY_EVERY
+  type: ScheduleType.NOTIFY_EVERY,
+  interval: 5, // in minutes, with ScheduleType.NOTIFY_EVERY
   notifyTimes: [], // for ScheduleType.NOTIFY_AT
   dayOfWeek: [false, false, false, false, false, false, false], // for ScheduleType.NOTIFY_AT
 };
@@ -88,7 +100,7 @@ function ScheduleForm({
                   returnKeyType={'done'}
                 />
                 <View style={styles.listItemCheckBoxView}>
-                  <ListItem.CheckBox
+                  {/* <ListItem.CheckBox
                     key={ScheduleType.NOTIFY_AT}
                     containerStyle={styles.listItemCheckBox}
                     textStyle={styles.listItemCheckBoxText}
@@ -111,31 +123,40 @@ function ScheduleForm({
                     onPress={() => {
                       setFieldValue('type', ScheduleType.NOTIFY_EVERY);
                     }}
-                  ></ListItem.CheckBox>
+                  ></ListItem.CheckBox> */}
                 </View>
                 {values.type === ScheduleType.NOTIFY_EVERY.toString() ? (
                   <SafeAreaView style={styles.timePickerSafeArea}>
                     <View style={styles.timePickerView}>
                       <Text style={styles.timePickerLabel}>Interval</Text>
                       <Text style={styles.timePickerValue}>
-                        {values.interval
-                          ? new Date(values.interval / 1000).toLocaleTimeString('it-IT', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
-                          : 'No date selected'}
+                        {values.interval ? convertMinutesToStringTime(values.interval) : 'No date selected'}
                       </Text>
                       <Button style={styles.timePickerButton} title="Select interval" onPress={showTimePicker} />
                       <DateTimePickerModal
                         testID="dateTimePicker"
-                        date={values.interval ? new Date(values.interval / 1000) : new Date(0)}
+                        date={
+                          values.interval
+                            ? (function (): Date {
+                                const converted = convertMinutesToHoursAndMinutes(values.interval);
+                                return new Date(2022, 1, 1, converted[0], converted[1]);
+                              })()
+                            : new Date(0)
+                        }
                         mode="time"
                         themeVariant="light"
                         is24Hour={true}
                         onConfirm={(selectedDate) => {
-                          console.log('selectedDateValue', selectedDate);
-                          setFieldValue('interval', selectedDate.getTime() * 1000);
-                          console.log('values.interval', values.interval);
+                          const minutes = convertHoursAndMinutesToMinutes(
+                            selectedDate.getHours(),
+                            selectedDate.getMinutes(),
+                          );
+                          if (minutes === 0) {
+                            createDbErrorWarning('Interval cannot be 00:00. Choose at least 00:01.');
+                            return;
+                          } else {
+                            setFieldValue('interval', minutes);
+                          }
                           hideTimePicker();
                         }}
                         isVisible={timePickerVisible}
@@ -147,7 +168,11 @@ function ScheduleForm({
                     </View>
                   </SafeAreaView>
                 ) : (
-                  <View></View>
+                  <View>
+                    {
+                      //Todo: add NOTIFY_AT form
+                    }
+                  </View>
                 )}
               </ScrollView>
               {

@@ -4,6 +4,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import * as yup from 'yup';
 import { FactProperties, FactDocument } from '../../db/fact/model';
+import { Schedule } from '../../db/schedule/model';
 import { Tag } from '../../db/tag/model';
 import { FONT_BIG, FONT_MEDIUM, FONT_SMALL } from '../../styleConstants';
 import FormHeaderWithButtons from '../FormHeaderWithButtons';
@@ -14,12 +15,14 @@ interface FactFormValues {
   deadline?: Date;
   active?: boolean;
   tags: string[];
+  schedules: string[];
 }
 
 interface FactFormProps {
   onSubmit: (values: FactFormValues, formikBag?: FormikBag<FactFormProps, FactFormValues>) => void;
   initialValues?: FactFormValues;
   tags: Tag[];
+  schedules: Schedule[];
   fact?: FactDocument;
   isUpdate?: boolean;
   onDelete?: (values: FactFormValues, formikBag?: FormikBag<FactFormProps, FactFormValues>) => void;
@@ -40,11 +43,13 @@ const defaultInitialValues: FactFormValues = {
   deadline: new Date(Date.now()),
   active: true,
   tags: [],
+  schedules: [],
 };
 
 function FactForm({
   onSubmit,
   tags,
+  schedules,
   initialValues = defaultInitialValues,
   isUpdate = false,
   onDelete,
@@ -110,6 +115,38 @@ function FactForm({
                               );
                             } else {
                               setFieldValue('tags', [...values.tags, tag.id]);
+                            }
+                          }}
+                        ></ListItem.CheckBox>
+                      ))
+                    ) : (
+                      <View style={styles.noContent}>
+                        <Text style={styles.noContentText}>No facts found.</Text>
+                      </View>
+                    )}
+                  </View>
+                </ScrollView>
+                <Text style={styles.listItemViewLabel}>Schedules</Text>
+                <ScrollView horizontal={true}>
+                  <View style={styles.listItemCheckBoxView}>
+                    {schedules.length ? (
+                      schedules.map((schedule: Schedule, i) => (
+                        <ListItem.CheckBox
+                          key={i}
+                          containerStyle={styles.listItemCheckBox}
+                          textStyle={styles.listItemCheckBoxText}
+                          title={schedule.name}
+                          checkedIcon="dot-circle-o"
+                          uncheckedIcon="circle-o"
+                          checked={values.schedules.includes(schedule.id)}
+                          onPress={() => {
+                            if (values.schedules.includes(schedule.id)) {
+                              setFieldValue(
+                                'tags',
+                                values.schedules.filter((id) => id !== schedule.id),
+                              );
+                            } else {
+                              setFieldValue('schedules', [...values.schedules, schedule.id]);
                             }
                           }}
                         ></ListItem.CheckBox>
