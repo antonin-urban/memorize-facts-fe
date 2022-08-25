@@ -13,7 +13,6 @@ function FormHeaderWithButtons({
   onCancel,
   onDelete = undefined,
 }: FormHeaderWithButtonsProps): React.ReactElement {
-  console.log(onDelete);
   const header = (
     <View style={styles.headerContainer}>
       <Header

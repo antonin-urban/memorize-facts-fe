@@ -80,7 +80,6 @@ type ScheduleCollectionMethods = {
 
 export const scheduleCollectionMethods: ScheduleCollectionMethods = {
   insertSchedule: async function (this: ScheduleCollection, data: Omit<Schedule, 'id'>) {
-    console.log(data.name);
     if (data?.name) {
       try {
         const found = await this.getScheduleByName(data.name);

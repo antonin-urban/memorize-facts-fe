@@ -49,7 +49,6 @@ type TagCollectionMethods = {
 
 export const tagCollectionMethods: TagCollectionMethods = {
   insertTag: async function (this: TagCollection, data: Omit<Tag, 'id'>) {
-    console.log(data.name);
     if (data?.name) {
       try {
         const found = await this.getTagByName(data.name);

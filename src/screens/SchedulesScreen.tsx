@@ -52,7 +52,6 @@ function SchedulesScreen(): React.ReactElement {
   };
 
   const toggleAddOverlay = () => {
-    console.log('toggle add');
     setAddVisible(!addVisible);
   };
 
@@ -80,7 +79,6 @@ function SchedulesScreen(): React.ReactElement {
                 ...scheduleFormProps,
               });
               if (isWithoutError) {
-                console.log('editScheduleCancel');
                 toggleEditOverlay();
               }
             }}

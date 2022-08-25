@@ -165,7 +165,6 @@ export const factDocumentMethods: FactDocMethods = {
 
 export const factCollectionMethods: FactCollectionMethods = {
   insertFact: async function (this: FactCollection, data: Omit<Fact, 'id'>) {
-    console.log(data.name);
     if (data?.name) {
       try {
         const found = await this.getFactByName(data.name);

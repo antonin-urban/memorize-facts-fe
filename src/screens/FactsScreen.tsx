@@ -85,7 +85,6 @@ function FactsScreen(): React.ReactElement {
   };
 
   const toggleAddOverlay = () => {
-    console.log('toggle add');
     setAddVisible(!addVisible);
   };
 
