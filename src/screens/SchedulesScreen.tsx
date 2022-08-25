@@ -42,7 +42,40 @@ function SchedulesScreen(): React.ReactElement {
   };
 
   const editSchedule = async (schedule: Schedule, data: Omit<Schedule, 'id'>): Promise<boolean> => {
-    return db.schedules.updateSchedule(schedule, data);
+    let result = false;
+
+    result = await db.schedules.updateSchedule(schedule, data);
+
+    if (!result) {
+      return false;
+    }
+
+    result = await db.notifications.deleteNotificationsBySchedule(schedule.id);
+
+    if (!result) {
+      return false;
+    }
+
+    const factsAssociatedWithSchedule = await db.facts
+      .find({
+        selector: {
+          schedules: {
+            $in: [schedule.id],
+          },
+        },
+      })
+      .exec();
+
+    const promises = await Promise.all(
+      factsAssociatedWithSchedule.map(
+        async (fact) =>
+          await db.notifications.insertNotification({
+            fact: fact.id,
+            schedule: schedule.id,
+          }),
+      ),
+    );
+    return promises.every((result) => result);
   };
 
   const toggleEditOverlay = (schedule?: ScheduleDocument) => {

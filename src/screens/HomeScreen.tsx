@@ -132,7 +132,7 @@ function HomeScreen(): React.ReactElement {
                                   paddingLeft: 2,
                                 }}
                               >
-                                {schedule.name}
+                                {`${schedule.name}\r with id ${item.id} \r with notificationId ${item.idNotification}`}
                               </Text>
                             );
                           })
