@@ -66,50 +66,15 @@ function FactsScreen(): React.ReactElement {
 
   const addFact = async (fact: Omit<Fact, 'id'>): Promise<boolean> => {
     const inserted = await db.facts.insertFact(fact);
-    await addNotification(inserted.id, inserted.schedules);
     return inserted ? true : false;
   };
 
-  const addNotification = async (factId: string, schedules: string[]): Promise<boolean> => {
-    try {
-      if (schedules) {
-        await Promise.all(
-          schedules.map((scheduleId) => {
-            db.notifications.insertNotification({
-              schedule: scheduleId,
-              fact: factId,
-            });
-          }),
-        );
-      }
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  };
-
   const removeFact = async (fact: Fact): Promise<boolean> => {
-    await db.notifications.deleteNotificationsByFact(fact.id);
     return db.facts.deleteFact(fact);
   };
 
   const editFact = async (fact: Fact, data: Omit<Fact, 'id'>): Promise<boolean> => {
-    let result = false;
-
-    result = await db.facts.updateFact(fact, data);
-
-    if (!result) {
-      return false;
-    }
-
-    result = await db.notifications.deleteNotificationsByFact(fact.id);
-
-    if (!result) {
-      return false;
-    }
-
-    return addNotification(fact.id, data.schedules);
+    return db.facts.updateFact(fact, data);
   };
 
   const toggleEditOverlay = (fact?: FactDocument) => {

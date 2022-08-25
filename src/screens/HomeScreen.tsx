@@ -2,7 +2,7 @@ import { Button, Icon, ListItem, Text } from '@rneui/themed';
 import { PermissionStatus } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { Notification } from 'expo-notifications';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useReducer, Reducer } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import { Fact, FactDocument } from '../db/fact/model';
@@ -10,24 +10,51 @@ import { ScheduleDocument, Schedule } from '../db/schedule/model';
 import { convertMinutesToHoursAndMinutes } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
+type NotificationState = {
+  actionType: 'merge' | 'set';
+  data: [Fact, Schedule][];
+};
+
 function HomeScreen(): React.ReactElement {
   const { db } = useContext(AppContext);
-  const [notifications, setNotifications] = useState([]);
-
-  console.log('notifications', notifications);
-
-  useEffect(() => {
-    // here
-    setNotifications([]);
-  }, []);
+  const [notificationsState, setNotificationState] = useReducer<Reducer<NotificationState, Partial<NotificationState>>>(
+    (state, newState) => {
+      switch (newState.actionType) {
+        case 'merge': //merge new data into existing state
+          return {
+            ...state,
+            ...newState,
+            data: [...state.data, ...newState.data],
+          };
+          break;
+        case 'set': //set the state to the new state
+          return {
+            ...state,
+            ...newState,
+            data: [...newState.data],
+          };
+        default:
+          break;
+      }
+      return state;
+    },
+    {
+      actionType: 'set',
+      data: [],
+    },
+  );
 
   // re-schedule notifications
   useEffect(() => {
     let sub;
-    const notificationsInner = [];
     if (db && db.facts) {
       sub = db.facts.find().$.subscribe(async (rxdbFacts) => {
         await Notifications.cancelAllScheduledNotificationsAsync();
+        setNotificationState({
+          actionType: 'set',
+          data: [],
+        });
+
         await Promise.all(
           rxdbFacts.map(async (fact: FactDocument) => {
             if (!fact.schedules.length) {
@@ -50,17 +77,20 @@ function HomeScreen(): React.ReactElement {
                   repeats: true,
                 },
               };
+
               await Notifications.scheduleNotificationAsync(schedulingOptions);
-              notificationsInner.push([fact, schedule]);
+
+              setNotificationState({
+                actionType: 'merge',
+                data: [[fact, schedule]],
+              });
             });
           }),
         );
-        setNotifications(notificationsInner);
       });
     }
     return () => {
       if (sub && sub.unsubscribe) sub.unsubscribe();
-      console.log('notificationsInner', notificationsInner);
     };
   }, [db]);
 
@@ -119,8 +149,8 @@ function HomeScreen(): React.ReactElement {
       <Button onPress={() => scheduleNotification(1)} title="Notify" />
 
       <ScrollView style={styles.listView}>
-        {notifications.length ? (
-          notifications.map((item: [Fact, Schedule], i) => (
+        {notificationsState.data.length ? (
+          notificationsState.data.map((item: [Fact, Schedule], i) => (
             <View style={styles.listItemView} key={i}>
               <ListItem>
                 <View style={styles.listItemView}>
