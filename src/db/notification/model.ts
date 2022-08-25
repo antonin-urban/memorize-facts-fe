@@ -31,18 +31,20 @@ export const notificationSchema: RxJsonSchema<Notification> = {
     fact: {
       type: 'string',
       maxLength: 100,
+      ref: 'facts',
     },
     schedule: {
       type: 'string',
       maxLength: 100,
+      ref: 'schedules',
     },
   },
   required: ['fact', 'schedule'],
   indexes: ['fact', 'schedule'],
 };
 
-export type NotificationCollection = RxCollection<Notification, undefined, NotificationCollectionMethods>;
-export type NotificationDocument = RxDocument<Notification>;
+export type NotificationCollection = RxCollection<Notification, NotificationDocMethods, NotificationCollectionMethods>;
+export type NotificationDocument = RxDocument<Notification, NotificationDocMethods>;
 
 // we declare one static ORM-method for the collection
 type NotificationCollectionMethods = {
@@ -63,6 +65,11 @@ type NotificationCollectionMethods = {
   getNotificationsByFact(this: NotificationCollection, factId: string): Promise<NotificationDocument[] | null>;
   getNotificationsBySchedule(this: NotificationCollection, scheduleId: string): Promise<NotificationDocument[] | null>;
   getNotification(this: NotificationCollection, id: string): Promise<NotificationDocument | null>;
+};
+
+type NotificationDocMethods = {
+  populateSchedule(this: NotificationDocument): Promise<Schedule>;
+  populateFact(this: NotificationDocument): Promise<Fact>;
 };
 
 export const notificationCollectionMethods: NotificationCollectionMethods = {
@@ -238,7 +245,7 @@ export const notificationCollectionMethods: NotificationCollectionMethods = {
 
     return query
       .exec()
-      .then((result: NotificationDocument[]) => {
+      .then((result: NotificationDocument) => {
         return result;
       })
       .catch((e) => {
@@ -287,5 +294,25 @@ export const notificationCollectionMethods: NotificationCollectionMethods = {
         handleDbError(e);
         return null;
       });
+  },
+};
+
+export const notificationDocumentMethods: NotificationDocMethods = {
+  populateSchedule: async function (this: NotificationDocument): Promise<Schedule> {
+    try {
+      return this.populate('schedule');
+    } catch (e) {
+      handleDbError(e);
+      return null;
+    }
+  },
+
+  populateFact: async function (this: NotificationDocument): Promise<Fact> {
+    try {
+      return this.populate('fact');
+    } catch (e) {
+      handleDbError(e);
+      return null;
+    }
   },
 };

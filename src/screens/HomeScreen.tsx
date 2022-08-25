@@ -28,6 +28,50 @@ function HomeScreen(): React.ReactElement {
     };
   }, [db]);
 
+  // schedule notifications
+  useEffect(() => {
+    let sub;
+    if (db && db.notifications) {
+      sub = db.notifications.find().$.subscribe(async (rxdbNotifications) => {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        await Promise.all(
+          rxdbNotifications.map(async (notification: NotificationDocument) => {
+            if (notification.idNotification) {
+              return;
+            }
+            console.log('notification', notification);
+            const fact = await notification.populateFact();
+            const schedule = await notification.populateSchedule();
+
+            console.log('fact', fact);
+            console.log('schedule', schedule);
+
+            console.warn('schedule', schedule.interval);
+
+            const schedulingOptions = {
+              content: {
+                title: fact.name,
+                body: fact.description,
+                sound: true,
+                priority: Notifications.AndroidNotificationPriority.HIGH,
+                color: 'blue',
+              },
+              trigger: {
+                seconds: schedule.interval * 60,
+                repeats: true,
+              },
+            };
+            const notificationId = await Notifications.scheduleNotificationAsync(schedulingOptions);
+            console.log(notificationId);
+          }),
+        );
+      });
+    }
+    return () => {
+      if (sub && sub.unsubscribe) sub.unsubscribe();
+    };
+  }, [db]);
+
   const [notificationPermissions, setNotificationPermissions] = useState<PermissionStatus>(
     PermissionStatus.UNDETERMINED,
   );

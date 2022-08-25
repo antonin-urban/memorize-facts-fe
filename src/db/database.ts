@@ -6,7 +6,12 @@ import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { FactCollection, factCollectionMethods, factDocumentMethods, factSchema } from './fact/model';
 import { HeroCollection, heroSchema } from './hero/model';
-import { notificationCollectionMethods, notificationSchema, NotificationCollection } from './notification/model';
+import {
+  notificationCollectionMethods,
+  notificationSchema,
+  NotificationCollection,
+  notificationDocumentMethods,
+} from './notification/model';
 import { ScheduleCollection, scheduleCollectionMethods, scheduleSchema } from './schedule/model';
 import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
 
@@ -86,7 +91,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       },
       notifications: {
         schema: notificationSchema,
-        //methods: notificationDocumentMethods,
+        methods: notificationDocumentMethods,
         statics: notificationCollectionMethods,
       },
     });
