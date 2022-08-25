@@ -5,106 +5,68 @@ import { Notification } from 'expo-notifications';
 import React, { useEffect, useState, useContext } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
-import { NotificationDocument } from '../db/notification/model';
+import { Fact, FactDocument } from '../db/fact/model';
+import { ScheduleDocument, Schedule } from '../db/schedule/model';
+import { convertMinutesToHoursAndMinutes } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function HomeScreen(): React.ReactElement {
   const { db } = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
-  const [facts, setFacts] = useState([]);
-  const [schedules, setSchedules] = useState([]);
 
   console.log('notifications', notifications);
 
   useEffect(() => {
-    let sub;
-    if (db && db.notifications) {
-      sub = db.notifications.find().$.subscribe((rxdbNotifications) => {
-        setNotifications(rxdbNotifications);
-      });
-    }
-    return () => {
-      if (sub && sub.unsubscribe) sub.unsubscribe();
-    };
-  }, [db]);
+    // here
+    setNotifications([]);
+  }, []);
 
-  // schedule notifications
+  // re-schedule notifications
   useEffect(() => {
     let sub;
-    if (db && db.notifications) {
-      sub = db.notifications.find().$.subscribe(async (rxdbNotifications) => {
+    const notificationsInner = [];
+    if (db && db.facts) {
+      sub = db.facts.find().$.subscribe(async (rxdbFacts) => {
         await Notifications.cancelAllScheduledNotificationsAsync();
         await Promise.all(
-          rxdbNotifications.map(async (notification: NotificationDocument) => {
-            if (notification.idNotification) {
+          rxdbFacts.map(async (fact: FactDocument) => {
+            if (!fact.schedules.length) {
               return;
             }
-            console.log('notification', notification);
-            const fact = await notification.populateFact();
-            const schedule = await notification.populateSchedule();
 
-            console.log('fact', fact);
-            console.log('schedule', schedule);
+            const schedules = await fact.populateSchedules();
 
-            console.warn('schedule', schedule.interval);
-
-            const schedulingOptions = {
-              content: {
-                title: fact.name,
-                body: fact.description,
-                sound: true,
-                priority: Notifications.AndroidNotificationPriority.HIGH,
-                color: 'blue',
-              },
-              trigger: {
-                seconds: schedule.interval * 60,
-                repeats: true,
-              },
-            };
-            const notificationId = await Notifications.scheduleNotificationAsync(schedulingOptions);
-            console.log(notificationId);
+            schedules.map(async (schedule: ScheduleDocument) => {
+              const schedulingOptions = {
+                content: {
+                  title: fact.name,
+                  body: fact.description,
+                  sound: true,
+                  priority: Notifications.AndroidNotificationPriority.HIGH,
+                  color: 'blue',
+                },
+                trigger: {
+                  seconds: schedule.interval * 60,
+                  repeats: true,
+                },
+              };
+              await Notifications.scheduleNotificationAsync(schedulingOptions);
+              notificationsInner.push([fact, schedule]);
+            });
           }),
         );
+        setNotifications(notificationsInner);
       });
     }
     return () => {
       if (sub && sub.unsubscribe) sub.unsubscribe();
+      console.log('notificationsInner', notificationsInner);
     };
   }, [db]);
 
   const [notificationPermissions, setNotificationPermissions] = useState<PermissionStatus>(
     PermissionStatus.UNDETERMINED,
   );
-
-  useEffect(() => {
-    let sub;
-    if (db && db.facts) {
-      sub = db.facts
-        .find()
-        .sort({ name: 'asc' })
-        .$.subscribe((rxdbFacts) => {
-          setFacts(rxdbFacts);
-        });
-    }
-    return () => {
-      if (sub && sub.unsubscribe) sub.unsubscribe();
-    };
-  }, [db]);
-
-  useEffect(() => {
-    let sub;
-    if (db && db.schedules) {
-      sub = db.schedules
-        .find()
-        .sort({ name: 'asc' })
-        .$.subscribe((rxdbTags) => {
-          setSchedules(rxdbTags);
-        });
-    }
-    return () => {
-      if (sub && sub.unsubscribe) sub.unsubscribe();
-    };
-  }, [db]);
 
   const scheduleNotification = (seconds: number) => {
     const schedulingOptions = {
@@ -158,53 +120,33 @@ function HomeScreen(): React.ReactElement {
 
       <ScrollView style={styles.listView}>
         {notifications.length ? (
-          notifications.map((item: NotificationDocument, i) => (
+          notifications.map((item: [Fact, Schedule], i) => (
             <View style={styles.listItemView} key={i}>
               <ListItem>
                 <View style={styles.listItemView}>
                   <Icon name="notes" style={styles.listItemIcon} size={25} />
                   <ListItem.Content style={styles.listItemContent}>
                     <ListItem.Title style={styles.listItemTitle}>
-                      {schedules.length ? (
-                        schedules
-                          .filter((schedule) => item.schedule === schedule.id)
-                          .map((schedule, i) => {
-                            return (
-                              <Text
-                                key={i}
-                                style={{
-                                  paddingLeft: 2,
-                                }}
-                              >
-                                {`${schedule.name}\r with id ${item.id} \r with notificationId ${item.idNotification}`}
-                              </Text>
-                            );
-                          })
-                      ) : (
-                        <Text>error</Text>
-                      )}
+                      <Text
+                        key={i}
+                        style={{
+                          paddingLeft: 2,
+                        }}
+                      >
+                        {convertMinutesToHoursAndMinutes(item[1].interval)}
+                      </Text>
                     </ListItem.Title>
                     <ListItem.Subtitle>
-                      {facts.length ? (
-                        facts
-                          .filter((fact) => item.fact === fact.id)
-                          .map((fact, i) => {
-                            return (
-                              <View key={i} style={styles.listItemScheduleSubtitle}>
-                                <Icon name="calendar-today" size={FONT_SMALL} />
-                                <Text
-                                  style={{
-                                    paddingLeft: 2,
-                                  }}
-                                >
-                                  {fact.name}
-                                </Text>
-                              </View>
-                            );
-                          })
-                      ) : (
-                        <Text>error</Text>
-                      )}
+                      <View key={i} style={styles.listItemScheduleSubtitle}>
+                        <Icon name="calendar-today" size={FONT_SMALL} />
+                        <Text
+                          style={{
+                            paddingLeft: 2,
+                          }}
+                        >
+                          {item[0].name}
+                        </Text>
+                      </View>
                     </ListItem.Subtitle>
                   </ListItem.Content>
                 </View>
