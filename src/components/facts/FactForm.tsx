@@ -100,7 +100,7 @@ function FactForm({
                     {tags.length ? (
                       tags.map((tag: Tag, i) => (
                         <ListItem.CheckBox
-                          key={i}
+                          key={`tag-${i}`}
                           containerStyle={styles.listItemCheckBox}
                           textStyle={styles.listItemCheckBoxText}
                           title={tag.name}
@@ -132,7 +132,7 @@ function FactForm({
                     {schedules.length ? (
                       schedules.map((schedule: Schedule, i) => (
                         <ListItem.CheckBox
-                          key={i}
+                          key={`schedule-${i}`}
                           containerStyle={styles.listItemCheckBox}
                           textStyle={styles.listItemCheckBoxText}
                           title={schedule.name}
@@ -142,7 +142,7 @@ function FactForm({
                           onPress={() => {
                             if (values.schedules.includes(schedule.id)) {
                               setFieldValue(
-                                'tags',
+                                'schedules',
                                 values.schedules.filter((id) => id !== schedule.id),
                               );
                             } else {

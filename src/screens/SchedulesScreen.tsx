@@ -37,6 +37,7 @@ function SchedulesScreen(): React.ReactElement {
   };
 
   const removeSchedule = async (schedule: Schedule): Promise<boolean> => {
+    await db.notifications.deleteNotificationsBySchedule(schedule.id);
     return db.schedules.deleteSchedule(schedule);
   };
 

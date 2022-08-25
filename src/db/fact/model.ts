@@ -78,7 +78,7 @@ type FactDocMethods = {
 };
 
 type FactCollectionMethods = {
-  insertFact(this: FactCollection, data: Omit<Fact, 'id'>): Promise<boolean>;
+  insertFact(this: FactCollection, data: Omit<Fact, 'id'>): Promise<Fact | undefined>;
   deleteFact(this: FactCollection, data: Fact): Promise<boolean>;
   updateFact(this: FactCollection, fact: Fact, data: Omit<Fact, 'id'>): Promise<boolean>;
   getFactByName(this: FactCollection, name: string): Promise<FactDocument | null>;
@@ -172,21 +172,20 @@ export const factCollectionMethods: FactCollectionMethods = {
 
         if (found?.name) {
           createDbErrorWarning('Fact already exists');
-          return false;
+          return;
         }
 
-        await this.insert({
+        return await this.insert({
           id: uuidv4(),
           ...data,
         });
-        return true;
       } catch (e) {
         handleDbError(e);
-        return false;
+        return;
       }
     } else {
       createDbErrorWarning('Name must be set');
-      return false;
+      return null;
     }
   },
 

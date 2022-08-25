@@ -10,7 +10,6 @@ import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function FactsScreen(): React.ReactElement {
   const { db } = useContext(AppContext);
-  //const [name, setName] = useState('');
   const [facts, setFacts] = useState([]);
   const [tags, setTags] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -66,15 +65,51 @@ function FactsScreen(): React.ReactElement {
   }, [db]);
 
   const addFact = async (fact: Omit<Fact, 'id'>): Promise<boolean> => {
-    return await db.facts.insertFact(fact);
+    const inserted = await db.facts.insertFact(fact);
+    await addNotification(inserted.id, inserted.schedules);
+    return inserted ? true : false;
+  };
+
+  const addNotification = async (factId: string, schedules: string[]): Promise<boolean> => {
+    try {
+      if (schedules) {
+        await Promise.all(
+          schedules.map((scheduleId) => {
+            db.notifications.insertNotification({
+              schedule: scheduleId,
+              fact: factId,
+            });
+          }),
+        );
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   };
 
   const removeFact = async (fact: Fact): Promise<boolean> => {
+    await db.notifications.deleteNotificationsByFact(fact.id);
     return db.facts.deleteFact(fact);
   };
 
   const editFact = async (fact: Fact, data: Omit<Fact, 'id'>): Promise<boolean> => {
-    return db.facts.updateFact(fact, data);
+    let result = false;
+
+    result = await db.facts.updateFact(fact, data);
+
+    if (!result) {
+      return false;
+    }
+
+    result = await db.notifications.deleteNotificationsByFact(fact.id);
+
+    if (!result) {
+      return false;
+    }
+
+    return addNotification(fact.id, data.schedules);
   };
 
   const toggleEditOverlay = (fact?: FactDocument) => {
@@ -236,7 +271,7 @@ function FactsScreen(): React.ReactElement {
                             );
                           })
                       ) : (
-                        <Text>No tags</Text>
+                        <Text>No schedules</Text>
                       )}
                     </ListItem.Subtitle>
                   </ListItem.Content>
