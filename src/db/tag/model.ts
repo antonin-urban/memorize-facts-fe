@@ -1,6 +1,6 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { createDbErrorWarning, handleDbError } from '../helpers';
+import { createErrorWarning, handleDbError } from '../helpers';
 
 export type Tag = {
   id: string;
@@ -54,7 +54,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
         const found = await this.getTagByName(data.name);
 
         if (found?.name) {
-          createDbErrorWarning('Tag already exists');
+          createErrorWarning('Tag already exists');
           return false;
         }
 
@@ -68,7 +68,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
         return false;
       }
     } else {
-      createDbErrorWarning('Name must be set');
+      createErrorWarning('Name must be set');
       return false;
     }
   },
@@ -80,7 +80,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
         await found.remove();
         return true;
       } else {
-        createDbErrorWarning('Tag not found');
+        createErrorWarning('Tag not found');
         return false;
       }
     } catch (e) {
@@ -97,7 +97,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
         if (found?.id) {
           const foundByName = await this.getTagByName(data.name);
           if (foundByName) {
-            createDbErrorWarning('Tag already exists');
+            createErrorWarning('Tag already exists');
             return false;
           }
 
@@ -108,7 +108,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
           });
           return true;
         } else {
-          createDbErrorWarning('Tag not found');
+          createErrorWarning('Tag not found');
           return false;
         }
       } catch (e) {
@@ -116,7 +116,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
         return false;
       }
     } else {
-      createDbErrorWarning('Name must be set');
+      createErrorWarning('Name must be set');
       return false;
     }
   },

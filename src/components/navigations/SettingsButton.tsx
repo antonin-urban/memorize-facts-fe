@@ -1,8 +1,10 @@
 import IonicIcons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '@react-navigation/native';
-import { HomeScreenProps, HomeStackNavParamList, HomeNavRouteNames } from './types';
+import { NotificationsScreenProps, NotificationsStackNavParamList, NotificationsNavRouteNames } from './types';
 
-function SettingsButton<T extends keyof HomeStackNavParamList>({ navigation }: HomeScreenProps<T>): React.ReactElement {
+function SettingsButton<T extends keyof NotificationsStackNavParamList>({
+  navigation,
+}: NotificationsScreenProps<T>): React.ReactElement {
   const colors = useTheme().colors;
 
   return (
@@ -13,7 +15,7 @@ function SettingsButton<T extends keyof HomeStackNavParamList>({ navigation }: H
       backgroundColor="transparent"
       underlayColor="transparent"
       onPress={() => {
-        navigation.navigate(HomeNavRouteNames.SettingsScreen);
+        navigation.navigate(NotificationsNavRouteNames.SettingsScreen);
       }}
     />
   );

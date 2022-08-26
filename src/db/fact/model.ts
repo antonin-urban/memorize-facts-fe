@@ -1,6 +1,6 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { createDbErrorWarning, handleDbError } from '../helpers';
+import { createErrorWarning, handleDbError } from '../helpers';
 import { Schedule } from '../schedule/model';
 import { Tag } from '../tag/model';
 
@@ -17,7 +17,7 @@ export type Fact = {
 export const FactProperties = {
   name: {
     minLength: 3,
-    maxLenth: 10,
+    maxLenth: 30,
   },
 };
 
@@ -170,7 +170,7 @@ export const factCollectionMethods: FactCollectionMethods = {
         const found = await this.getFactByName(data.name);
 
         if (found?.name) {
-          createDbErrorWarning('Fact already exists');
+          createErrorWarning('Fact already exists');
           return;
         }
 
@@ -183,7 +183,7 @@ export const factCollectionMethods: FactCollectionMethods = {
         return;
       }
     } else {
-      createDbErrorWarning('Name must be set');
+      createErrorWarning('Name must be set');
       return null;
     }
   },
@@ -195,7 +195,7 @@ export const factCollectionMethods: FactCollectionMethods = {
         await found.remove();
         return true;
       } else {
-        createDbErrorWarning('Fact not found');
+        createErrorWarning('Fact not found');
         return false;
       }
     } catch (e) {
@@ -212,7 +212,7 @@ export const factCollectionMethods: FactCollectionMethods = {
         if (found?.id) {
           const foundByName = await this.getFactByName(data.name);
           if (foundByName && foundByName.id !== fact.id) {
-            createDbErrorWarning('Fact already exists');
+            createErrorWarning('Fact already exists');
             return false;
           }
 
@@ -223,7 +223,7 @@ export const factCollectionMethods: FactCollectionMethods = {
           });
           return true;
         } else {
-          createDbErrorWarning('Fact not found');
+          createErrorWarning('Fact not found');
           return false;
         }
       } catch (e) {
@@ -231,7 +231,7 @@ export const factCollectionMethods: FactCollectionMethods = {
         return false;
       }
     } else {
-      createDbErrorWarning('Name must be set');
+      createErrorWarning('Name must be set');
       return false;
     }
   },

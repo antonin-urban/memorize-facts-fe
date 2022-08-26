@@ -6,13 +6,13 @@ import FactsScreen from '../../screens/FactsScreen';
 import SchedulesScreen from '../../screens/SchedulesScreen';
 import TagsScreen from '../../screens/TagsScreen';
 import { FONT_EXTRA_BIG } from '../../styleConstants';
-import HomeStackNavigator from './HomeNavigator';
+import HomeStackNavigator from './NotificationsNavigator';
 import { RootNavRouteNames, RootStackParamList } from './types';
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const screenOptions = ({ route }): BottomTabNavigationOptions => ({
-  headerShown: route.name !== RootNavRouteNames.HomeStackNavigator,
+  headerShown: route.name !== RootNavRouteNames.NotificationsStackNavigator,
   headerTitleStyle: {
     fontWeight: 'bold',
     fontSize: FONT_EXTRA_BIG,
@@ -20,11 +20,11 @@ const screenOptions = ({ route }): BottomTabNavigationOptions => ({
   tabBarIcon: ({ focused, color, size }) => {
     let iconName;
 
-    if (route.name === RootNavRouteNames.HomeStackNavigator) {
+    if (route.name === RootNavRouteNames.NotificationsStackNavigator) {
       if (focused) {
-        iconName = 'home';
+        iconName = 'notifications';
       } else {
-        iconName = 'home-outline';
+        iconName = 'notifications-outline';
       }
 
       return <IoinicIcons name={iconName} size={size} color={color} />;
@@ -61,10 +61,10 @@ function RootTabNavigatior(): React.ReactElement {
     <NavigationContainer>
       <Tab.Navigator screenOptions={screenOptions}>
         <Tab.Screen
-          name={RootNavRouteNames.HomeStackNavigator}
+          name={RootNavRouteNames.NotificationsStackNavigator}
           component={HomeStackNavigator}
           options={{
-            title: 'Home',
+            title: 'Notifications',
           }}
         />
         <Tab.Screen

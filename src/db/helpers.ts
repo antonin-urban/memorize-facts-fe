@@ -15,20 +15,20 @@ export function handleDbError(e: RxError): void {
     console.error(e.code);
     switch (e.code) {
       case ERROR_CODES.DUPLICATE_KEY:
-        createDbErrorWarning(ERROR_MESSAGES[ERROR_CODES.DUPLICATE_KEY]);
+        createErrorWarning(ERROR_MESSAGES[ERROR_CODES.DUPLICATE_KEY]);
         break;
       default:
         console.error(e);
-        createDbErrorWarning(ERROR_MESSAGES.UNKNOWN);
+        createErrorWarning(ERROR_MESSAGES.UNKNOWN);
         break;
     }
     return;
   }
   console.error(e);
-  createDbErrorWarning(ERROR_MESSAGES.UNKNOWN);
+  createErrorWarning(ERROR_MESSAGES.UNKNOWN);
 }
 
-export function createDbErrorWarning(message: string): void {
+export function createErrorWarning(message: string): void {
   Alert.alert('Error', message, [{ text: 'OK' }]);
 }
 

@@ -198,7 +198,7 @@ function FactsScreen(): React.ReactElement {
                   <ListItem.Content style={styles.listItemContent}>
                     <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
                     <ListItem.Subtitle style={styles.listItemSubtitle}>
-                      {makeExcerpt(item.description, 50)}
+                      {item.description ? makeExcerpt(item.description, 50) : 'No description'}
                     </ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.listItemTagSubtitle}>
                       {tags.length ? (
@@ -280,22 +280,23 @@ const styles = StyleSheet.create({
 
   listItemIcon: { paddingRight: 15 },
 
-  listItemTitle: { paddingRight: 15, fontSize: FONT_MEDIUM },
+  listItemTitle: { paddingRight: 15, fontSize: FONT_MEDIUM, fontWeight: 'bold' },
 
-  listItemSubtitle: { paddingRight: 15, paddingTop: 10, fontSize: FONT_MEDIUM },
+  listItemSubtitle: { paddingRight: 15, paddingTop: 5, fontSize: FONT_MEDIUM },
 
-  listItemTagSubtitle: { paddingRight: 15, paddingTop: 10, marginTop: 20, marginBottom: 0 },
+  listItemTagSubtitle: { paddingRight: 15, paddingTop: 0, marginTop: 20, marginBottom: 0 },
 
-  listItemScheduleSubtitle: {},
+  listItemScheduleSubtitle: {
+    marginTop: 10,
+  },
 
   listItemSubtitleTag: {
     paddingRight: 10,
-    paddingTop: 0,
     marginTop: 0,
+    paddingBottom: 5,
     alignItems: 'center',
     flexDirection: 'row',
     fontSize: FONT_SMALL,
-    height: FONT_SMALL + 5,
   },
 
   noContent: {

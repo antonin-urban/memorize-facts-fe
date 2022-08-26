@@ -5,7 +5,6 @@ import { AppContext } from '../components/AppContext';
 import ScheduleForm from '../components/schedules/ScheduleForm';
 import { createDeleteAlert } from '../db/helpers';
 import { ScheduleDocument, Schedule } from '../db/schedule/model';
-import { convertMinutesToStringTime } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function SchedulesScreen(): React.ReactElement {
@@ -32,7 +31,7 @@ function SchedulesScreen(): React.ReactElement {
     };
   }, [db]);
 
-  const addSchedule = async (schedule: Omit<Schedule, 'id'>): Promise<boolean> => {
+  const addSchedule = async (schedule: Omit<Schedule, 'id' | 'name'>): Promise<boolean> => {
     return await db.schedules.insertSchedule(schedule);
   };
 
@@ -40,8 +39,8 @@ function SchedulesScreen(): React.ReactElement {
     return db.schedules.deleteSchedule(schedule);
   };
 
-  const editSchedule = async (schedule: Schedule, data: Omit<Schedule, 'id'>): Promise<boolean> => {
-    return db.schedules.updateSchedule(schedule, data);
+  const editSchedule = async (schedule: Schedule, data: Omit<Schedule, 'id' | 'name'>): Promise<boolean> => {
+    return db.schedules.updateSchedule(schedule, { ...data });
   };
 
   const toggleEditOverlay = (schedule?: ScheduleDocument) => {
@@ -53,12 +52,6 @@ function SchedulesScreen(): React.ReactElement {
 
   const toggleAddOverlay = () => {
     setAddVisible(!addVisible);
-  };
-
-  const trimValues = (data: Partial<Schedule>): Partial<Omit<Schedule, 'id'>> => {
-    return {
-      name: data.name.trim(),
-    };
   };
 
   return (
@@ -75,7 +68,6 @@ function SchedulesScreen(): React.ReactElement {
           <ScheduleForm
             onSubmit={async (scheduleFormProps) => {
               const isWithoutError = await editSchedule(editedObject, {
-                ...trimValues(scheduleFormProps),
                 ...scheduleFormProps,
               });
               if (isWithoutError) {
@@ -90,7 +82,6 @@ function SchedulesScreen(): React.ReactElement {
               });
             }}
             initialValues={{
-              name: editedObject.name,
               type: editedObject.type,
               interval: editedObject.interval,
             }}
@@ -110,10 +101,7 @@ function SchedulesScreen(): React.ReactElement {
         <View style={styles.overlayView}>
           <ScheduleForm
             onSubmit={async (scheduleFormProps, formikBag) => {
-              const isWithoutError = await addSchedule({
-                ...trimValues(scheduleFormProps),
-                ...scheduleFormProps,
-              });
+              const isWithoutError = await addSchedule(scheduleFormProps);
               if (isWithoutError) {
                 formikBag.resetForm();
                 toggleAddOverlay();
@@ -160,9 +148,6 @@ function SchedulesScreen(): React.ReactElement {
                   <Icon name="calendar-today" style={styles.listItemIcon} size={25} />
                   <ListItem.Content style={styles.listItemContent}>
                     <ListItem.Title style={styles.listItemTitle}>{item.name}</ListItem.Title>
-                    <ListItem.Subtitle style={styles.listItemSubtitle}>
-                      {convertMinutesToStringTime(item.interval)}
-                    </ListItem.Subtitle>
                   </ListItem.Content>
                 </View>
               </ListItem.Swipeable>
@@ -207,20 +192,6 @@ const styles = StyleSheet.create({
   listItemIcon: { paddingRight: 15 },
 
   listItemTitle: { paddingRight: 15, fontSize: FONT_MEDIUM },
-
-  listItemSubtitle: { paddingRight: 15, paddingTop: 10, fontSize: FONT_MEDIUM },
-
-  listItemTagSubtitle: { paddingRight: 15, paddingTop: 10, marginTop: 20, marginBottom: 0 },
-
-  listItemSubtitleTag: {
-    paddingRight: 10,
-    paddingTop: 0,
-    marginTop: 0,
-    alignItems: 'center',
-    flexDirection: 'row',
-    fontSize: FONT_SMALL,
-    height: FONT_SMALL + 5,
-  },
 
   noContent: {
     justifyContent: 'center',

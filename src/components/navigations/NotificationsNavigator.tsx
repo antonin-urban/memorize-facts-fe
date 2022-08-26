@@ -1,18 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import HeroesScreen from '../../screens/HereosScreen';
-import HomeScreen from '../../screens/HomeScreen';
+import NotificationsScreen from '../../screens/NotificationsScreen';
 import SettingsScreen from '../../screens/SettingsScreen';
 import { FONT_EXTRA_BIG } from '../../styleConstants';
 import SettingsButton from './SettingsButton';
-import { HomeNavRouteNames, HomeStackNavParamList } from './types';
+import { NotificationsNavRouteNames, NotificationsStackNavParamList } from './types';
 
-const Stack = createStackNavigator<HomeStackNavParamList>();
+const Stack = createStackNavigator<NotificationsStackNavParamList>();
 
 function HomeStackNavigator(): React.ReactElement {
   return (
     <Stack.Navigator
-      initialRouteName={HomeNavRouteNames.HomeScreen}
+      initialRouteName={NotificationsNavRouteNames.NotificationsScreen}
       screenOptions={{
         headerTitleStyle: {
           fontWeight: 'bold',
@@ -21,19 +20,18 @@ function HomeStackNavigator(): React.ReactElement {
       }}
     >
       <Stack.Screen
-        name={HomeNavRouteNames.HomeScreen}
-        component={HomeScreen}
+        name={NotificationsNavRouteNames.NotificationsScreen}
+        component={NotificationsScreen}
         options={({ navigation, route }) => ({
-          title: 'Home',
+          title: 'Notifications',
           headerRight: () =>
-            SettingsButton<HomeNavRouteNames.HomeScreen>({
+            SettingsButton<NotificationsNavRouteNames.NotificationsScreen>({
               navigation: navigation,
               route: route,
             }),
         })}
       />
-      <Stack.Screen name={HomeNavRouteNames.HeroesScreen} component={HeroesScreen} />
-      <Stack.Screen name={HomeNavRouteNames.SettingsScreen} component={SettingsScreen} />
+      <Stack.Screen name={NotificationsNavRouteNames.SettingsScreen} component={SettingsScreen} />
     </Stack.Navigator>
   );
 }

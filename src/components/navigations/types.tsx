@@ -1,33 +1,17 @@
 import { ParamListBase, NavigatorScreenParams, CompositeScreenProps } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 
-// export type ScreenProps<
-//   ParamList extends ParamListBase,
-//   RouteName extends keyof ParamList = string,
-// > = NativeStackScreenProps<ParamList, RouteName>;
-
-// export type ScreenNavigationProp<
-//   ParamList extends ParamListBase,
-//   RouteName extends keyof ParamList = string,
-// > = ScreenProps<ParamList, RouteName>['navigation'];
-
-// export type ScreenRouteProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = string> = ScreenProps<
-//   ParamList,
-//   RouteName
-// >['route'];
-
 export enum RootNavRouteNames {
-  HomeScreen = 'HomeScreen',
+  NotificationsScreen = 'NotificationsScreen',
   SchedulesScreen = 'SchedulesScreen',
   FactsScreen = 'FactsScreen',
   TagsScreen = 'TagsScreen',
   SettingsScreen = 'SettingsScreen',
-  HeroesScreen = 'HeroesScreen',
-  HomeStackNavigator = 'HomeStackNavigator',
+  NotificationsStackNavigator = 'HomeStackNavigator',
 }
 
 export interface RootStackParamList extends ParamListBase {
-  HomeStackNavigator: NavigatorScreenParams<HomeStackNavParamList>;
+  NotificationsStackNavigator: NavigatorScreenParams<NotificationsStackNavParamList>;
   SchedulesScreen: undefined;
   FactsScreen: undefined;
   TagsScreen: undefined;
@@ -35,20 +19,19 @@ export interface RootStackParamList extends ParamListBase {
 
 export type RootTabNavigationProp<T extends keyof RootStackParamList> = StackScreenProps<RootStackParamList, T>;
 
-export enum HomeNavRouteNames {
-  HomeScreen = 'HomeScreen',
-  HeroesScreen = 'HeroesScreen',
+export enum NotificationsNavRouteNames {
+  NotificationsScreen = 'NotificationsScreen',
   SettingsScreen = 'SettingsScreen',
 }
 
-export type HomeStackNavParamList = {
-  HomeScreen: undefined;
+export type NotificationsStackNavParamList = {
+  NotificationsScreen: undefined;
   SettingsScreen: undefined;
   HeroesScreen: undefined;
 };
 
-export type HomeScreenProps<T extends keyof HomeStackNavParamList> = CompositeScreenProps<
-  StackScreenProps<HomeStackNavParamList, T>,
+export type NotificationsScreenProps<T extends keyof NotificationsStackNavParamList> = CompositeScreenProps<
+  StackScreenProps<NotificationsStackNavParamList, T>,
   RootTabNavigationProp<keyof RootStackParamList>
 >;
 

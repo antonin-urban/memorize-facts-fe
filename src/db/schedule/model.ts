@@ -1,6 +1,7 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { createDbErrorWarning, handleDbError } from '../helpers';
+import { convertMinutesToHoursAndMinutes, convertMinutesToStringTime } from '../../helpers';
+import { createErrorWarning, handleDbError } from '../helpers';
 
 export type Schedule = {
   id: string;
@@ -16,12 +17,7 @@ export enum ScheduleType {
   NOTIFY_AT = 'NOTIFY_AT',
 }
 
-export const ScheduleProperties = {
-  name: {
-    minLength: 3,
-    maxLenth: 50,
-  },
-};
+export const ScheduleProperties = {};
 
 export const scheduleSchema: RxJsonSchema<Schedule> = {
   title: 'schedule schema',
@@ -37,11 +33,11 @@ export const scheduleSchema: RxJsonSchema<Schedule> = {
     },
     name: {
       type: 'string',
-      maxLength: ScheduleProperties.name.maxLenth,
+      maxLength: 100,
     },
     type: {
       type: 'string', // ScheduleType.NOTIFY_EVERY | ScheduleType.NOTIFY_AT
-      maxLength: 50,
+      maxLength: 20,
     },
     interval: {
       type: 'number',
@@ -71,35 +67,36 @@ export type ScheduleCollection = RxCollection<Schedule, undefined, ScheduleColle
 export type ScheduleDocument = RxDocument<Schedule>;
 
 type ScheduleCollectionMethods = {
-  insertSchedule(this: ScheduleCollection, data: Omit<Schedule, 'id'>): Promise<boolean>;
+  insertSchedule(this: ScheduleCollection, data: Omit<Schedule, 'id' | 'name'>): Promise<boolean>;
   deleteSchedule(this: ScheduleCollection, data: Schedule): Promise<boolean>;
-  updateSchedule(this: ScheduleCollection, schedule: Schedule, data: Omit<Schedule, 'id'>): Promise<boolean>;
+  updateSchedule(this: ScheduleCollection, schedule: Schedule, data: Omit<Schedule, 'id' | 'name'>): Promise<boolean>;
   getScheduleByName(this: ScheduleCollection, name: string): Promise<ScheduleDocument | null>;
   getSchedule(this: ScheduleCollection, id: string): Promise<ScheduleDocument | null>;
+  generateName(data: Omit<Schedule, 'id' | 'name'>): string;
 };
 
 export const scheduleCollectionMethods: ScheduleCollectionMethods = {
-  insertSchedule: async function (this: ScheduleCollection, data: Omit<Schedule, 'id'>) {
-    if (data?.name) {
-      try {
-        const found = await this.getScheduleByName(data.name);
+  insertSchedule: async function (this: ScheduleCollection, data: Omit<Schedule, 'id' | 'name'>) {
+    const generateName = this.generateName(data);
+    if (!generateName) {
+      return;
+    }
+    try {
+      const found = await this.getScheduleByName(generateName);
 
-        if (found?.name) {
-          createDbErrorWarning('Schedule already exists');
-          return false;
-        }
-
-        await this.insert({
-          id: uuidv4(),
-          ...data,
-        });
-        return true;
-      } catch (e) {
-        handleDbError(e);
+      if (found?.name) {
+        createErrorWarning('Schedule already exists');
         return false;
       }
-    } else {
-      createDbErrorWarning('Name must be set');
+
+      await this.insert({
+        id: uuidv4(),
+        name: generateName,
+        ...data,
+      });
+      return true;
+    } catch (e) {
+      handleDbError(e);
       return false;
     }
   },
@@ -111,7 +108,7 @@ export const scheduleCollectionMethods: ScheduleCollectionMethods = {
         await found.remove();
         return true;
       } else {
-        createDbErrorWarning('Schedule not found');
+        createErrorWarning('Schedule not found');
         return false;
       }
     } catch (e) {
@@ -121,33 +118,34 @@ export const scheduleCollectionMethods: ScheduleCollectionMethods = {
   },
 
   updateSchedule: async function (this: ScheduleCollection, schedule: Schedule, data: Omit<Schedule, 'id'>) {
-    if (schedule?.name) {
-      try {
-        const found = await this.getSchedule(schedule.id);
+    try {
+      const generateName = this.generateName(data);
+      if (!generateName) {
+        return;
+      }
+      const foundByName = await this.getScheduleByName(generateName);
 
-        if (found?.id) {
-          const foundByName = await this.getScheduleByName(data.name);
-          if (foundByName && foundByName.id !== schedule.id) {
-            createDbErrorWarning('Schedule already exists');
-            return false;
-          }
-
-          await found.update({
-            $set: {
-              ...data,
-            },
-          });
-          return true;
-        } else {
-          createDbErrorWarning('Schedule not found');
-          return false;
-        }
-      } catch (e) {
-        handleDbError(e);
+      if (foundByName) {
+        createErrorWarning('Schedule already exists');
         return false;
       }
-    } else {
-      createDbErrorWarning('Name must be set');
+
+      const found = await this.getSchedule(schedule.id);
+
+      if (found?.id) {
+        await found.update({
+          $set: {
+            name: generateName,
+            ...data,
+          },
+        });
+        return true;
+      } else {
+        createErrorWarning('Schedule not found');
+        return false;
+      }
+    } catch (e) {
+      handleDbError(e);
       return false;
     }
   },
@@ -186,5 +184,34 @@ export const scheduleCollectionMethods: ScheduleCollectionMethods = {
         handleDbError(e);
         return null;
       });
+  },
+
+  generateName(data: Omit<Schedule, 'id' | 'name'>): string {
+    let generatedName = '';
+    if (!data?.type && !data?.interval && !data?.notifyTimes && !data?.dayOfWeek) {
+      createErrorWarning('Missing shedule type');
+      return '';
+    }
+
+    switch (data.type) {
+      case ScheduleType.NOTIFY_EVERY:
+        if (data?.interval) {
+          generatedName += `repeat after ${convertMinutesToStringTime(data.interval)}`;
+        } else {
+          createErrorWarning(`Missing interval for ${ScheduleType.NOTIFY_EVERY} schedule`);
+        }
+        break;
+      case ScheduleType.NOTIFY_AT:
+        if (data?.dayOfWeek && data?.notifyTimes) {
+          generatedName += `${data.notifyTimes.join(', ')} at ${data.dayOfWeek.join(', ')}`;
+        } else {
+          createErrorWarning(`Missing dayOfWeek or notifyTimes for ${ScheduleType.NOTIFY_AT} schedule`);
+        }
+        break;
+      default:
+        createErrorWarning(`Unknown schedule type ${data.type}`);
+    }
+
+    return generatedName;
   },
 };

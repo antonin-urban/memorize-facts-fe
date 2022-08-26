@@ -1,12 +1,12 @@
-import { Button, Input, Text } from '@rneui/themed';
+import { Button, Text } from '@rneui/themed';
 import { Formik, FormikBag } from 'formik';
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
-import { createDbErrorWarning } from '../../db/helpers';
-import { ScheduleProperties, ScheduleDocument, ScheduleType } from '../../db/schedule/model';
+import { createErrorWarning } from '../../db/helpers';
+import { ScheduleDocument, ScheduleType } from '../../db/schedule/model';
 import {
   convertMinutesToStringTime,
   convertHoursAndMinutesToMinutes,
@@ -16,7 +16,6 @@ import { FONT_BIG, FONT_MEDIUM, FONT_SMALL } from '../../styleConstants';
 import FormHeaderWithButtons from '../FormHeaderWithButtons';
 
 interface ScheduleFormValues {
-  name: string;
   type: ScheduleType;
   interval?: number;
   notifyTimes?: string[];
@@ -33,12 +32,6 @@ interface ScheduleFormProps {
 }
 
 const ScheduleValidationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .min(ScheduleProperties.name.minLength, ({ min }) => `Schedule name must be at least ${min} characters`)
-    .max(ScheduleProperties.name.maxLenth, ({ max }) => `Schedule name must be maximum ${max} characters`)
-    .required('Schedule name is required'),
-
   interval: yup.number().when('type', {
     is: ScheduleType.NOTIFY_AT,
     then: yup.number().required('Must enter valid interval'),
@@ -47,7 +40,6 @@ const ScheduleValidationSchema = yup.object().shape({
 });
 
 const defaultInitialValues: ScheduleFormValues = {
-  name: '',
   type: ScheduleType.NOTIFY_EVERY,
   interval: 5, // in minutes, with ScheduleType.NOTIFY_EVERY
   notifyTimes: [], // for ScheduleType.NOTIFY_AT
@@ -87,18 +79,9 @@ function ScheduleForm({
           validationSchema={ScheduleValidationSchema}
           enableReinitialize={true}
         >
-          {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, touched, errors }) => (
+          {({ handleSubmit, setFieldValue, values }) => (
             <View style={styles.formDataView}>
               <ScrollView>
-                <Input
-                  style={styles.input}
-                  label={<Text style={styles.label}>Name</Text>}
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  value={values.name}
-                  errorMessage={touched.name && errors.name ? errors.name : undefined}
-                  returnKeyType={'done'}
-                />
                 <View style={styles.listItemCheckBoxView}>
                   {/* <ListItem.CheckBox
                     key={ScheduleType.NOTIFY_AT}
@@ -152,7 +135,7 @@ function ScheduleForm({
                             selectedDate.getMinutes(),
                           );
                           if (minutes === 0) {
-                            createDbErrorWarning('Interval cannot be 00:00. Choose at least 00:01.');
+                            createErrorWarning('Interval cannot be 00:00. Choose at least 00:01.');
                             return;
                           } else {
                             setFieldValue('interval', minutes);
