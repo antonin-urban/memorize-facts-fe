@@ -207,12 +207,12 @@ function FactsScreen(): React.ReactElement {
                             return (
                               <View key={i} style={styles.listItemSubtitleTag}>
                                 <Icon name="tag" size={FONT_SMALL} />
-                                <Text>{tag.name}</Text>
+                                <Text adjustsFontSizeToFit={true}> {tag.name}</Text>
                               </View>
                             );
                           })
                       ) : (
-                        <Text>No tags</Text>
+                        <Text adjustsFontSizeToFit={true}>No tags</Text>
                       )}
                     </ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.listItemScheduleSubtitle}>
@@ -224,6 +224,7 @@ function FactsScreen(): React.ReactElement {
                               <View key={i} style={styles.listItemSubtitleTag}>
                                 <Icon name="calendar-today" size={FONT_SMALL} />
                                 <Text
+                                  adjustsFontSizeToFit={true}
                                   style={{
                                     paddingLeft: 2,
                                   }}
@@ -234,7 +235,7 @@ function FactsScreen(): React.ReactElement {
                             );
                           })
                       ) : (
-                        <Text>No schedules</Text>
+                        <Text adjustsFontSizeToFit={true}>No schedules</Text>
                       )}
                     </ListItem.Subtitle>
                   </ListItem.Content>
@@ -244,7 +245,9 @@ function FactsScreen(): React.ReactElement {
           ))
         ) : (
           <View style={styles.noContent}>
-            <Text style={styles.noContentText}>No facts found.</Text>
+            <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+              No facts found.
+            </Text>
           </View>
         )}
       </ScrollView>

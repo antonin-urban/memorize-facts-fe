@@ -62,45 +62,50 @@ function SettingsScreen(): React.ReactElement {
 
   return (
     <View style={{ flex: 1 }}>
-      <SettingsForm
-        onSubmit={async (settingsFormProps) => {
-          try {
-            await loginToGqlServer({
-              variables: { email: settingsFormProps.email, password: settingsFormProps.password },
-            })
-              .then(async (res) => {
-                if (res.data.authenticateUserWithPassword.__typename === 'UserAuthenticationWithPasswordSuccess') {
-                  await setLoginInfoToContext({ ...settingsFormProps, syncOn: true }, context);
-                  createInfoAlert('Succes', 'Login successful');
-                } else {
-                  const errorMessage = res.data.authenticateUserWithPassword.message;
-                  console.error(errorMessage);
-                  createErrorWarning(`GQL Server error: ${errorMessage}`);
-                }
+      <View style={{ flex: 1 }}>
+        <SettingsForm
+          onSubmit={async (settingsFormProps) => {
+            try {
+              await loginToGqlServer({
+                variables: { email: settingsFormProps.email, password: settingsFormProps.password },
               })
-              .catch((err) => {
-                console.error(JSON.stringify(err, null, 2));
-                createErrorWarning(`GQL Server error: ${err.message}`);
-              });
+                .then(async (res) => {
+                  if (res.data.authenticateUserWithPassword.__typename === 'UserAuthenticationWithPasswordSuccess') {
+                    await setLoginInfoToContext({ ...settingsFormProps, syncOn: true }, context);
+                    createInfoAlert('Succes', 'Login successful');
+                  } else {
+                    const errorMessage = res.data.authenticateUserWithPassword.message;
+                    console.error(errorMessage);
+                    createErrorWarning(`GQL Server error: ${errorMessage}`);
+                  }
+                })
+                .catch((err) => {
+                  console.error(JSON.stringify(err, null, 2));
+                  createErrorWarning(`GQL Server error: ${err.message}`);
+                });
 
-            return;
-          } catch (e) {
-            createErrorWarning(`Login error: ${e}`);
-          }
-        }}
-        logOut={async () => await logOut(context)}
-        initialValues={{
-          email: loginInfo[0] ?? '',
-          password: loginInfo[1] ?? '',
-          syncOn: context.syncStatus,
-        }}
-      />
+              return;
+            } catch (e) {
+              createErrorWarning(`Login error: ${e}`);
+            }
+          }}
+          logOut={async () => await logOut(context)}
+          initialValues={{
+            email: loginInfo[0] ?? '',
+            password: loginInfo[1] ?? '',
+            syncOn: context.syncStatus,
+          }}
+        />
+      </View>
       <View style={{ flex: 1 }}>
         <Text
+          adjustsFontSizeToFit={true}
           style={{
             fontSize: FONT_EXTRA_BIG,
             textAlign: 'center',
             fontWeight: 'bold',
+            flexDirection: 'row',
+            justifyContent: 'center',
           }}
         >
           Sync status: {context.syncStatus ? 'ON' : 'OFF'}

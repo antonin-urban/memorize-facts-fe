@@ -52,7 +52,11 @@ function TagForm({
             <View style={styles.formDataView}>
               <Input
                 style={styles.input}
-                label={<Text style={styles.label}>Tag name</Text>}
+                label={
+                  <Text adjustsFontSizeToFit={true} style={styles.label}>
+                    Tag name
+                  </Text>
+                }
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
                 value={values.name}

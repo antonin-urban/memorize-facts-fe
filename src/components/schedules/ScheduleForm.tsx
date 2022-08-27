@@ -111,8 +111,10 @@ function ScheduleForm({
                 {values.type === ScheduleType.NOTIFY_EVERY.toString() ? (
                   <SafeAreaView style={styles.timePickerSafeArea}>
                     <View style={styles.timePickerView}>
-                      <Text style={styles.timePickerLabel}>Interval</Text>
-                      <Text style={styles.timePickerValue}>
+                      <Text adjustsFontSizeToFit={true} style={styles.timePickerLabel}>
+                        Interval
+                      </Text>
+                      <Text adjustsFontSizeToFit={true} style={styles.timePickerValue}>
                         {values.interval ? convertMinutesToStringTime(values.interval) : 'No date selected'}
                       </Text>
                       <Button style={styles.timePickerButton} title="Select interval" onPress={showTimePicker} />

@@ -155,7 +155,9 @@ function SchedulesScreen(): React.ReactElement {
           ))
         ) : (
           <View style={styles.noContent}>
-            <Text style={styles.noContentText}>No schedules found.</Text>
+            <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+              No schedules found.
+            </Text>
           </View>
         )}
       </ScrollView>

@@ -6,7 +6,6 @@ import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBReplicationGraphQLPlugin } from 'rxdb/plugins/replication-graphql';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
-import { filter } from 'rxjs';
 import { FactCollection, factCollectionMethods, factDocumentMethods, factSchema } from './fact/model';
 import { generateIsoDate } from './helpers';
 import { HeroCollection, heroSchema } from './hero/model';
@@ -34,19 +33,21 @@ addRxPlugin(RxDBEncryptionPlugin);
 
 const storage = getRxStoragePouch('react-native-sqlite');
 
-const isDevelopment = process.env.NODE_ENV !== 'prod' || process.env.DEBUG_PROD === 'true';
+const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.DEBUG_PROD === 'true';
 
 let database: RxDatabase;
 
 export async function initialize(databaseInstance: RxDatabase): Promise<RxDatabase> {
   console.log('isDevelopment', isDevelopment);
-  if (databaseInstance) {
-    return databaseInstance;
-  }
 
   if (isDevelopment) {
     try {
-      await removeRxDatabase(DB_NAME, storage);
+      if (process.env.DEBUG_PROD !== 'true') {
+        if (databaseInstance) {
+          return databaseInstance;
+        }
+        await removeRxDatabase(DB_NAME, storage);
+      }
       const { RxDBDevModePlugin } = await import('rxdb/plugins/dev-mode');
       addRxPlugin(RxDBDevModePlugin);
     } catch (e) {

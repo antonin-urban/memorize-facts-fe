@@ -237,6 +237,7 @@ function NotificationsScreen(): React.ReactElement {
                     <ListItem.Content style={styles.listItemContent}>
                       <ListItem.Title style={styles.listItemTitle}>
                         <Text
+                          adjustsFontSizeToFit={true}
                           key={i}
                           style={{
                             paddingLeft: 2,
@@ -249,6 +250,7 @@ function NotificationsScreen(): React.ReactElement {
                         <View key={i} style={styles.listItemScheduleSubtitle}>
                           <Icon name="notes" size={FONT_SMALL} />
                           <Text
+                            adjustsFontSizeToFit={true}
                             style={{
                               paddingLeft: 2,
                             }}
@@ -264,14 +266,18 @@ function NotificationsScreen(): React.ReactElement {
             ))
           ) : (
             <View style={styles.noContent}>
-              <Text style={styles.noContentText}>No notifications.</Text>
+              <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+                No notifications.
+              </Text>
             </View>
           )}
         </ScrollView>
       ) : (
         <View style={styles.noPermisionsView}>
-          <Text style={styles.noPermisionsHeaderText}>Notifications permission not granted.</Text>
-          <Text style={styles.noPermisionsText}>
+          <Text adjustsFontSizeToFit={true} style={styles.noPermisionsHeaderText}>
+            Notifications permission not granted.
+          </Text>
+          <Text adjustsFontSizeToFit={true} style={styles.noPermisionsText}>
             Please go to setting and allow notifications for this app. Then click the button bellow to try again.
           </Text>
           <Button

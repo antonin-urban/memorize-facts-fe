@@ -44,7 +44,6 @@ function TagsScreen(): React.ReactElement {
   };
 
   const toggleEditOverlay = (tag?: TagDocument) => {
-    console.debug('toggle edit', tag);
     if (tag) {
       setEditedObject(tag);
     }
@@ -143,7 +142,9 @@ function TagsScreen(): React.ReactElement {
             ))
           ) : (
             <View style={styles.noContent}>
-              <Text style={styles.noContentText}>No tags found.</Text>
+              <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+                No tags found.
+              </Text>
             </View>
           )}
         </ScrollView>

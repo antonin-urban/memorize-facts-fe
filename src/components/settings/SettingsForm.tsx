@@ -46,7 +46,11 @@ function SettingsForm({ onSubmit, logOut, initialValues = defaultInitialValues }
             <View style={styles.formDataView}>
               <Input
                 style={styles.input}
-                label={<Text style={styles.label}>Email</Text>}
+                label={
+                  <Text adjustsFontSizeToFit={true} style={styles.label}>
+                    Email
+                  </Text>
+                }
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 value={values.email}
@@ -56,7 +60,11 @@ function SettingsForm({ onSubmit, logOut, initialValues = defaultInitialValues }
               />
               <Input
                 style={styles.input}
-                label={<Text style={styles.label}>Password</Text>}
+                label={
+                  <Text adjustsFontSizeToFit={true} style={styles.label}>
+                    Password
+                  </Text>
+                }
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 value={values.password}
@@ -66,12 +74,12 @@ function SettingsForm({ onSubmit, logOut, initialValues = defaultInitialValues }
                 secureTextEntry={true}
               />
               {
-                // https://github.com/gimmickless/iyiye-native-app/issues/5
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 <Button
                   size="lg"
                   style={styles.submitButton}
                   radius={0}
+                  // https://github.com/gimmickless/iyiye-native-app/issues/5
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onPress={handleSubmit as any}
                   title="Login and turn on sync"
                 />
