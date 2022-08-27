@@ -1,6 +1,6 @@
 import { Header, Button, Icon } from '@rneui/themed';
 import { View, Text, StyleSheet } from 'react-native';
-import { FONT_BIG, FONT_SMALL, FONT_MEDIUM } from '../styleConstants';
+import { FONT_BIG, FONT_MEDIUM } from '../styleConstants';
 
 interface FormHeaderWithButtonsProps {
   title: string;

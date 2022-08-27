@@ -132,7 +132,7 @@ function FactForm({
                     ) : (
                       <View style={styles.noContent}>
                         <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
-                          No facts found.
+                          No tags found.
                         </Text>
                       </View>
                     )}
@@ -168,7 +168,7 @@ function FactForm({
                     ) : (
                       <View style={styles.noContent}>
                         <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
-                          No facts found.
+                          No schedules found.
                         </Text>
                       </View>
                     )}

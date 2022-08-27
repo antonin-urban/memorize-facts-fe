@@ -62,7 +62,7 @@ function SettingsScreen(): React.ReactElement {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, flexDirection: 'row' }}>
         <SettingsForm
           onSubmit={async (settingsFormProps) => {
             try {
