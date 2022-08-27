@@ -25,10 +25,6 @@ export async function checkSyncStatusInSecureStore(): Promise<boolean> {
   const loginFromStorage = await getValueFromSecureStore(SYNC_SECURE_STORE_KEYS.LOGIN);
   const passwordFromStorage = await getValueFromSecureStore(SYNC_SECURE_STORE_KEYS.PASSWORD);
 
-  console.log('statusFromStorage', statusFromStorage);
-  console.log('loginFromStorage', loginFromStorage);
-  console.log('passwordFromStorage', passwordFromStorage);
-
   if (statusFromStorage === SYNC_SECURE_STORE_STATUS.ENABLED && loginFromStorage && passwordFromStorage) {
     return true;
   }

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const GQL_SERVER_URL = 'http://192.168.0.166:3000/api/graphql';
+export const GQL_SERVER_URL = 'https://memorize-facts-backend.herokuapp.com/api/graphql';
 
 /**
  * Amount of documents that the remote will send in one request.

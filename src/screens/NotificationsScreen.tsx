@@ -84,7 +84,6 @@ function NotificationsScreen(): React.ReactElement {
 
       //subscribe to facts
       subToFacts = db.facts.find().$.subscribe(async (rxdbFacts) => {
-        console.log('subscribe to facts: ', rxdbFacts);
         await resetAllNotifications();
 
         if (!(await checkNotificationPermissions())) {

@@ -110,7 +110,6 @@ function FactsScreen(): React.ReactElement {
             onSubmit={async (factFormProps) => {
               const isWithoutError = await editFact(editedObject, { ...trimValues(factFormProps), ...factFormProps });
               if (isWithoutError) {
-                console.log('editFactCancel');
                 toggleEditOverlay();
               }
             }}

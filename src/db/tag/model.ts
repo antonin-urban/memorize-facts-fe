@@ -13,7 +13,7 @@ export type TagInput = Omit<Tag, 'id' | 'updatedAt'>;
 export const TagProperties = {
   name: {
     minLength: 3,
-    maxLenth: 10,
+    maxLenth: 20,
   },
 };
 

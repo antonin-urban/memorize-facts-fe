@@ -98,11 +98,6 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       doc.updatedAt = generateIsoDate();
     }, false);
 
-    database.tags.$.pipe(filter((ev) => !ev.isLocal)).subscribe((ev) => {
-      console.log('collection.$ emitted:');
-      console.dir(ev);
-    });
-
     if (isDevelopment) {
       database.$.subscribe((changeEvent) => console.log(changeEvent)); // turn on logging via observable
     }

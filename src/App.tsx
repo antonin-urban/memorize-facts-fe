@@ -61,15 +61,12 @@ function App(): React.ReactElement {
 
         // set replication state
         setTagReplicationState(tagReplicationStateInner);
-
-        console.log('Sync enabled');
       } catch (e) {
         console.error(e);
       }
     } else if (db && syncStatus === false && tagReplicationState) {
       // cancel existing replication
       tagReplicationState.cancel();
-      console.log('Sync cancelled');
     }
   }, [db, syncStatus]);
 
