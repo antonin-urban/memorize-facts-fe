@@ -61,8 +61,8 @@ function SettingsScreen(): React.ReactElement {
   const [loginToGqlServer] = useMutation(LOGIN_QUERY);
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, flexDirection: 'row' }}>
+    <View style={{ flex: 1, flexDirection: 'column' }}>
+      <View style={{ flex: 1 }}>
         <SettingsForm
           onSubmit={async (settingsFormProps) => {
             try {
@@ -97,7 +97,7 @@ function SettingsScreen(): React.ReactElement {
           }}
         />
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'flex-start' }}>
         <Text
           adjustsFontSizeToFit={true}
           style={{
