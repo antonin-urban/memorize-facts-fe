@@ -1,6 +1,6 @@
 import { Header, Button, Icon } from '@rneui/themed';
 import { View, Text, StyleSheet } from 'react-native';
-import { FONT_BIG, FONT_MEDIUM } from '../styleConstants';
+import { FONT_BIG } from '../styleConstants';
 
 interface FormHeaderWithButtonsProps {
   title: string;
@@ -22,7 +22,7 @@ function FormHeaderWithButtons({
             <Button size="sm" color="error" type="solid" onPress={onDelete as any}>
               {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                <Icon name="delete-outline" color="white" adjustsFontSizeToFit={true} size={FONT_MEDIUM} />
+                <Icon name="delete-outline" color="white" adjustsFontSizeToFit={true} />
               }
             </Button>
           ) : (
@@ -37,7 +37,7 @@ function FormHeaderWithButtons({
         leftComponent={
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <Button size="sm" type="solid" onPress={onCancel as any}>
-            <Icon name="arrow-back-ios" color="white" adjustsFontSizeToFit={true} size={FONT_MEDIUM} />
+            <Icon name="arrow-back-ios" color="white" adjustsFontSizeToFit={true} />
           </Button>
         }
       />
@@ -51,14 +51,18 @@ const styles = StyleSheet.create({
   header: {
     fontSize: FONT_BIG,
     fontWeight: 'bold',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     color: 'white',
+    flexDirection: 'column',
+    paddingTop: 5,
+    paddingBottom: 5,
   },
 
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
 });
 
