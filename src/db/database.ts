@@ -1,10 +1,14 @@
 import * as SQLite from 'expo-sqlite';
 import SQLiteAdapterFactory from 'pouchdb-adapter-react-native-sqlite';
 import { addRxPlugin, createRxDatabase, removeRxDatabase, RxDatabase } from 'rxdb';
+import { RxDBEncryptionPlugin } from 'rxdb/plugins/encryption';
 import { addPouchPlugin, getRxStoragePouch } from 'rxdb/plugins/pouchdb';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
+import { RxDBReplicationGraphQLPlugin } from 'rxdb/plugins/replication-graphql';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
+import { filter } from 'rxjs';
 import { FactCollection, factCollectionMethods, factDocumentMethods, factSchema } from './fact/model';
+import { generateIsoDate } from './helpers';
 import { HeroCollection, heroSchema } from './hero/model';
 import { ScheduleCollection, scheduleCollectionMethods, scheduleSchema } from './schedule/model';
 import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
@@ -25,6 +29,8 @@ addPouchPlugin(SQLiteAdapter);
 addPouchPlugin(require('pouchdb-adapter-http'));
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBUpdatePlugin);
+addRxPlugin(RxDBReplicationGraphQLPlugin);
+addRxPlugin(RxDBEncryptionPlugin);
 
 const storage = getRxStoragePouch('react-native-sqlite');
 
@@ -88,6 +94,15 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
   }
 
   try {
+    database.tags.preSave(async (doc) => {
+      doc.updatedAt = generateIsoDate();
+    }, false);
+
+    database.tags.$.pipe(filter((ev) => !ev.isLocal)).subscribe((ev) => {
+      console.log('collection.$ emitted:');
+      console.dir(ev);
+    });
+
     if (isDevelopment) {
       database.$.subscribe((changeEvent) => console.log(changeEvent)); // turn on logging via observable
     }

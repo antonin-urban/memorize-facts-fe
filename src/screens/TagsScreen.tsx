@@ -4,7 +4,7 @@ import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import TagForm from '../components/tags/TagForm';
 import { createDeleteAlert } from '../db/helpers';
-import { Tag, TagDocument } from '../db/tag/model';
+import { Tag, TagDocument, TagInput } from '../db/tag/model';
 import { FONT_SMALL, FONT_MEDIUM } from '../styleConstants';
 
 function TagsScreen(): React.ReactElement {
@@ -31,7 +31,7 @@ function TagsScreen(): React.ReactElement {
     };
   }, [db]);
 
-  const addTag = async (tag: Omit<Tag, 'id'>): Promise<boolean> => {
+  const addTag = async (tag: TagInput): Promise<boolean> => {
     return await db.tags.insertTag(tag);
   };
 
@@ -39,7 +39,7 @@ function TagsScreen(): React.ReactElement {
     return db.tags.deleteTag(tag);
   };
 
-  const editTag = async (tag: Tag, data: Omit<Tag, 'id'>): Promise<boolean> => {
+  const editTag = async (tag: Tag, data: TagInput): Promise<boolean> => {
     return db.tags.updateTag(tag, data);
   };
 
@@ -51,8 +51,9 @@ function TagsScreen(): React.ReactElement {
     setEditVisible(!editVisible);
   };
 
-  const trimValues = (data: Partial<Tag>): Omit<Tag, 'id'> => {
+  const trimValues = (data: Partial<Tag>): TagInput => {
     return {
+      ...data,
       name: data.name.trim(),
     };
   };

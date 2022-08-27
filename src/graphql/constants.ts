@@ -1,0 +1,38 @@
+import { gql } from '@apollo/client';
+
+export const GQL_SERVER_URL = 'http://192.168.0.166:3000/api/graphql';
+
+/**
+ * Amount of documents that the remote will send in one request.
+ * If the response contains less then [batchSize] documents,
+ * RxDB will assume there are no more changes on the backend
+ * that are not replicated.
+ * This value is the same as the limit in the feedForRxDBReplication() schema.
+ */
+export const SYNC_BATCH_PULL_SIZE = 1;
+
+/**
+ * batchSize (optional)
+ * Amount of document that will be pushed to the server in a single request.
+ */
+export const SYNC_BATCH_PUSH_SIZE = undefined; //no batching
+
+export const BASE_SYNC_OPTIONS = {
+  url: GQL_SERVER_URL, // url to the GraphQL endpoint
+  deletedFlag: 'deleted', // the flag which indicates if a pulled document is deleted
+  live: true, // if this is true, rxdb will watch for ongoing changes and sync them, when false, a one-time-replication will be done
+};
+
+export const LOGIN_QUERY = gql`
+  mutation authenticateUserWithPassword($email: String!, $password: String!) {
+    authenticateUserWithPassword(email: $email, password: $password) {
+      __typename
+      ... on UserAuthenticationWithPasswordSuccess {
+        sessionToken
+      }
+      ... on UserAuthenticationWithPasswordFailure {
+        message
+      }
+    }
+  }
+`;
