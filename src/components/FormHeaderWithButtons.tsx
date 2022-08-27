@@ -37,7 +37,7 @@ function FormHeaderWithButtons({
         leftComponent={
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <Button size="sm" type="solid" onPress={onCancel as any}>
-            <Icon name="arrow-back-ios" color="white" adjustsFontSizeToFit={true} />
+            <Icon name="arrow-back-ios" color="white" adjustsFontSizeToFit={true} style={{ fontSize: 20 }} />
           </Button>
         }
       />
@@ -52,11 +52,10 @@ const styles = StyleSheet.create({
     fontSize: FONT_BIG,
     fontWeight: 'bold',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'stretch',
     color: 'white',
     flexDirection: 'column',
     paddingTop: 5,
-    paddingBottom: 5,
   },
 
   headerContainer: {

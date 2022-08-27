@@ -62,7 +62,7 @@ function SettingsScreen(): React.ReactElement {
 
   return (
     <View style={{ flex: 1, flexDirection: 'column' }}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, flexGrow: 3, flexShrink: 1 }}>
         <SettingsForm
           onSubmit={async (settingsFormProps) => {
             try {
@@ -97,7 +97,7 @@ function SettingsScreen(): React.ReactElement {
           }}
         />
       </View>
-      <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+      <View style={{ flex: 1, flexGrow: 2, flexShrink: 1, justifyContent: 'flex-start' }}>
         <Text
           adjustsFontSizeToFit={true}
           style={{

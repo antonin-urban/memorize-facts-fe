@@ -164,13 +164,13 @@ const styles = StyleSheet.create({
 
   formView: {
     flex: 3,
-    flexGrow: 1.5,
-    flexShrink: 0,
+    flexGrow: 3,
+    flexShrink: 3,
   },
 
   listContainerView: {
-    flex: 4,
-    flexGrow: 4,
+    flex: 6,
+    flexGrow: 6,
     flexShrink: 3,
   },
 
