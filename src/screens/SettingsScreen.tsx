@@ -70,11 +70,11 @@ function SettingsScreen(): React.ReactElement {
                 variables: { email: settingsFormProps.email, password: settingsFormProps.password },
               })
                 .then(async (res) => {
-                  if (res.data.authenticateUserWithPassword.__typename === 'UserAuthenticationWithPasswordSuccess') {
+                  if (res.data?.authenticateUserWithPassword?.__typename === 'UserAuthenticationWithPasswordSuccess') {
                     await setLoginInfoToContext({ ...settingsFormProps, syncOn: true }, context);
                     createInfoAlert('Succes', 'Login successful');
                   } else {
-                    const errorMessage = res.data.authenticateUserWithPassword.message;
+                    const errorMessage = res.data?.authenticateUserWithPassword?.message;
                     console.error(errorMessage);
                     createErrorWarning(`GQL Server error: ${errorMessage}`);
                   }
@@ -83,8 +83,6 @@ function SettingsScreen(): React.ReactElement {
                   console.error(JSON.stringify(err, null, 2));
                   createErrorWarning(`GQL Server error: ${err.message}`);
                 });
-
-              return;
             } catch (e) {
               createErrorWarning(`Login error: ${e}`);
             }
