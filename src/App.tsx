@@ -5,10 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { RxDatabase } from 'rxdb';
 import { AppContext } from './components/AppContext';
 import RootTabNavigatior from './components/navigations/RootNavigator';
+import { GQL_SERVER_URL } from './config';
 import { initialize, MemorizeFactsDatabaseCollections } from './db/database';
 import { handleReplicationError } from './db/helpers';
 import { checkSyncStatusInSecureStore } from './db/secureStore';
-import { GQL_SERVER_URL } from './graphql/constants';
 import { syncOptionsGraphQL } from './graphql/tag/replication';
 
 const cache = new InMemoryCache();

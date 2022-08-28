@@ -1,8 +1,9 @@
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { RxGraphQLReplicationPullQueryBuilder, RxGraphQLReplicationPushQueryBuilder, SyncOptionsGraphQL } from 'rxdb';
+import { SYNC_BATCH_PULL_SIZE, SYNC_BATCH_PUSH_SIZE } from '../../config';
 import { Tag, TagDocument } from '../../db/tag/model';
-import { BASE_SYNC_OPTIONS, SYNC_BATCH_PULL_SIZE, SYNC_BATCH_PUSH_SIZE } from '../constants';
+import { BASE_SYNC_OPTIONS } from '../constants';
 
 const pullQueryBuilder: RxGraphQLReplicationPullQueryBuilder<TagDocument> = (tag: TagDocument) => {
   if (!tag) {

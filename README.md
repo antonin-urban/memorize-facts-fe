@@ -20,3 +20,6 @@ yarn start
 will execute TypeScript compiler in watch mode and start Expo development server. Then you can, for example, connect your phone to the same network and run the app using Expo Go app. You can also run the app in emulators. Please check [Expo documentation](https://docs.expo.dev/) for more details.
 
 Please note that you need to have [Expo CLI](https://docs.expo.dev/workflow/expo-cli/) installed.
+
+### GraphQL sync
+If you want to sync to your own local instance of **Memorize facts backend**, you need to change the GraphQL server endpoint URL via `GQL_SERVER_URL` constant and located in `src/config.ts` file.
