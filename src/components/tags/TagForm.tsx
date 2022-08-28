@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: FONT_MEDIUM,
+    flex: 1,
   },
 });
 
