@@ -80,18 +80,18 @@ function TagForm({
 const styles = StyleSheet.create({
   headerContainerView: {
     flex: 1,
-    flexGrow: 0.3,
+    flexShrink: 0.7,
+    flexGrow: 1.2,
   },
 
   formContainerView: {
     paddingTop: 20,
-    flexGrow: 1,
+    flex: 1,
+    flexGrow: 3,
   },
 
   formDataView: {
     flex: 1,
-    flexGrow: 1,
-    flexShrink: -1,
   },
 
   submitButton: {},

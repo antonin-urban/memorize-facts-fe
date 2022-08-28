@@ -161,18 +161,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginTop: 0,
     paddingTop: 0,
-    flexGrow: 1,
   },
 
   formView: {
-    flexGrow: 1.1,
     flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
   },
 
   listContainerView: {
-    flexGrow: 1,
-    flexShrink: -1,
-    paddingTop: 5,
+    flex: 1,
+    flexGrow: 4,
+    flexShrink: 0.5,
   },
 
   overlayView: { flex: 1 },
