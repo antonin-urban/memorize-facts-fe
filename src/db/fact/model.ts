@@ -1,6 +1,7 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { createErrorWarning, handleDbError } from '../helpers';
+import { createErrorWarning } from '../../helpers';
+import { handleDbError } from '../helpers';
 import { Schedule } from '../schedule/model';
 import { Tag } from '../tag/model';
 

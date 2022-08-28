@@ -73,10 +73,14 @@ function FactForm({
         >
           {({ handleChange, handleBlur, handleSubmit, values, touched, errors, setFieldValue }) => (
             <View style={styles.formDataView}>
-              <ScrollView>
+              <ScrollView bounces={false}>
                 <Input
                   style={styles.input}
-                  label={<Text style={styles.label}>Name</Text>}
+                  label={
+                    <Text adjustsFontSizeToFit={true} style={styles.label}>
+                      Name
+                    </Text>
+                  }
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                   value={values.name}
@@ -87,14 +91,20 @@ function FactForm({
                   style={styles.input}
                   multiline
                   numberOfLines={4}
-                  label={<Text style={styles.label}>Description</Text>}
+                  label={
+                    <Text adjustsFontSizeToFit={true} style={styles.label}>
+                      Description
+                    </Text>
+                  }
                   onChangeText={handleChange('description')}
                   onBlur={handleBlur('description')}
                   value={values.description}
                   errorMessage={touched.description && errors.description ? errors.description : undefined}
                   returnKeyType={'next'}
                 />
-                <Text style={styles.listItemViewLabel}>Tags</Text>
+                <Text adjustsFontSizeToFit={true} style={styles.listItemViewLabel}>
+                  Tags
+                </Text>
                 <ScrollView horizontal={true}>
                   <View style={styles.listItemCheckBoxView}>
                     {tags.length ? (
@@ -121,12 +131,16 @@ function FactForm({
                       ))
                     ) : (
                       <View style={styles.noContent}>
-                        <Text style={styles.noContentText}>No facts found.</Text>
+                        <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+                          No tags found.
+                        </Text>
                       </View>
                     )}
                   </View>
                 </ScrollView>
-                <Text style={styles.listItemViewLabel}>Schedules</Text>
+                <Text adjustsFontSizeToFit={true} style={styles.listItemViewLabel}>
+                  Schedules
+                </Text>
                 <ScrollView horizontal={true}>
                   <View style={styles.listItemCheckBoxView}>
                     {schedules.length ? (
@@ -153,7 +167,9 @@ function FactForm({
                       ))
                     ) : (
                       <View style={styles.noContent}>
-                        <Text style={styles.noContentText}>No facts found.</Text>
+                        <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+                          No schedules found.
+                        </Text>
                       </View>
                     )}
                   </View>

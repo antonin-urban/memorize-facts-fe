@@ -1,6 +1,6 @@
 import { Button, Input, Text } from '@rneui/themed';
 import { Formik, FormikBag } from 'formik';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import * as yup from 'yup';
 import { TagProperties } from '../../db/tag/model';
 import { FONT_BIG, FONT_MEDIUM } from '../../styleConstants';
@@ -44,20 +44,26 @@ function TagForm({
           <FormHeaderWithButtons title="Update" onDelete={onDelete} onCancel={onCancel} />
         </View>
       ) : (
-        <View style={{ flex: 0 }}></View>
+        <View></View>
       )}
       <View style={styles.formContainerView}>
         <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={TagValidationSchema}>
           {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
             <View style={styles.formDataView}>
-              <Input
-                style={styles.input}
-                label={<Text style={styles.label}>Tag name</Text>}
-                onChangeText={handleChange('name')}
-                onBlur={handleBlur('name')}
-                value={values.name}
-                errorMessage={touched.name && errors.name ? errors.name : undefined}
-              />
+              <ScrollView bounces={false}>
+                <Input
+                  style={styles.input}
+                  label={
+                    <Text adjustsFontSizeToFit={true} style={styles.label}>
+                      Tag name
+                    </Text>
+                  }
+                  onChangeText={handleChange('name')}
+                  onBlur={handleBlur('name')}
+                  value={values.name}
+                  errorMessage={touched.name && errors.name ? errors.name : undefined}
+                />
+              </ScrollView>
               {
                 // https://github.com/gimmickless/iyiye-native-app/issues/5
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,17 +79,21 @@ function TagForm({
 
 const styles = StyleSheet.create({
   headerContainerView: {
-    flex: 4,
+    flex: 1,
+    flexShrink: 0.7,
+    flexGrow: 1.2,
   },
 
   formContainerView: {
     paddingTop: 20,
-    flex: 9,
+    flex: 1,
+    flexGrow: 3,
   },
 
   formDataView: {
-    flex: 8,
+    flex: 1,
   },
+
   submitButton: {},
 
   label: {
@@ -92,6 +102,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: FONT_MEDIUM,
+    flex: 1,
   },
 });
 

@@ -22,18 +22,22 @@ function FormHeaderWithButtons({
             <Button size="sm" color="error" type="solid" onPress={onDelete as any}>
               {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                <Icon name="delete-outline" color="white" size={25} />
+                <Icon name="delete-outline" color="white" adjustsFontSizeToFit={true} />
               }
             </Button>
           ) : (
             {}
           )
         }
-        centerComponent={<Text style={styles.header}>{title}</Text>}
+        centerComponent={
+          <Text adjustsFontSizeToFit={true} style={styles.header}>
+            {title}
+          </Text>
+        }
         leftComponent={
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <Button size="sm" type="solid" onPress={onCancel as any}>
-            <Icon name="arrow-back-ios" color="white" size={25} />
+            <Icon name="arrow-back-ios" color="white" adjustsFontSizeToFit={true} style={{ fontSize: 20 }} />
           </Button>
         }
       />
@@ -47,15 +51,17 @@ const styles = StyleSheet.create({
   header: {
     fontSize: FONT_BIG,
     fontWeight: 'bold',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'stretch',
     color: 'white',
+    flexDirection: 'column',
     paddingTop: 5,
   },
 
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
 });
 

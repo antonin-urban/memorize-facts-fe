@@ -31,7 +31,13 @@ function HomeStackNavigator(): React.ReactElement {
             }),
         })}
       />
-      <Stack.Screen name={NotificationsNavRouteNames.SettingsScreen} component={SettingsScreen} />
+      <Stack.Screen
+        name={NotificationsNavRouteNames.SettingsScreen}
+        component={SettingsScreen}
+        options={() => ({
+          title: 'Settings',
+        })}
+      />
     </Stack.Navigator>
   );
 }

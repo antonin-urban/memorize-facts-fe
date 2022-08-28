@@ -5,12 +5,12 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
-import { createErrorWarning } from '../../db/helpers';
 import { ScheduleDocument, ScheduleType } from '../../db/schedule/model';
 import {
   convertMinutesToStringTime,
   convertHoursAndMinutesToMinutes,
   convertMinutesToHoursAndMinutes,
+  createErrorWarning,
 } from '../../helpers';
 import { FONT_BIG, FONT_MEDIUM, FONT_SMALL } from '../../styleConstants';
 import FormHeaderWithButtons from '../FormHeaderWithButtons';
@@ -81,7 +81,7 @@ function ScheduleForm({
         >
           {({ handleSubmit, setFieldValue, values }) => (
             <View style={styles.formDataView}>
-              <ScrollView>
+              <ScrollView bounces={false}>
                 <View style={styles.listItemCheckBoxView}>
                   {/* <ListItem.CheckBox
                     key={ScheduleType.NOTIFY_AT}
@@ -111,8 +111,10 @@ function ScheduleForm({
                 {values.type === ScheduleType.NOTIFY_EVERY.toString() ? (
                   <SafeAreaView style={styles.timePickerSafeArea}>
                     <View style={styles.timePickerView}>
-                      <Text style={styles.timePickerLabel}>Interval</Text>
-                      <Text style={styles.timePickerValue}>
+                      <Text adjustsFontSizeToFit={true} style={styles.timePickerLabel}>
+                        Interval
+                      </Text>
+                      <Text adjustsFontSizeToFit={true} style={styles.timePickerValue}>
                         {values.interval ? convertMinutesToStringTime(values.interval) : 'No date selected'}
                       </Text>
                       <Button style={styles.timePickerButton} title="Select interval" onPress={showTimePicker} />

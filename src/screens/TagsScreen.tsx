@@ -3,8 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import TagForm from '../components/tags/TagForm';
-import { createDeleteAlert } from '../db/helpers';
-import { Tag, TagDocument } from '../db/tag/model';
+import { Tag, TagDocument, TagInput } from '../db/tag/model';
+import { createDeleteAlert } from '../helpers';
 import { FONT_SMALL, FONT_MEDIUM } from '../styleConstants';
 
 function TagsScreen(): React.ReactElement {
@@ -31,7 +31,7 @@ function TagsScreen(): React.ReactElement {
     };
   }, [db]);
 
-  const addTag = async (tag: Omit<Tag, 'id'>): Promise<boolean> => {
+  const addTag = async (tag: TagInput): Promise<boolean> => {
     return await db.tags.insertTag(tag);
   };
 
@@ -39,20 +39,20 @@ function TagsScreen(): React.ReactElement {
     return db.tags.deleteTag(tag);
   };
 
-  const editTag = async (tag: Tag, data: Omit<Tag, 'id'>): Promise<boolean> => {
+  const editTag = async (tag: Tag, data: TagInput): Promise<boolean> => {
     return db.tags.updateTag(tag, data);
   };
 
   const toggleEditOverlay = (tag?: TagDocument) => {
-    console.debug('toggle edit', tag);
     if (tag) {
       setEditedObject(tag);
     }
     setEditVisible(!editVisible);
   };
 
-  const trimValues = (data: Partial<Tag>): Omit<Tag, 'id'> => {
+  const trimValues = (data: Partial<Tag>): TagInput => {
     return {
+      ...data,
       name: data.name.trim(),
     };
   };
@@ -142,7 +142,9 @@ function TagsScreen(): React.ReactElement {
             ))
           ) : (
             <View style={styles.noContent}>
-              <Text style={styles.noContentText}>No tags found.</Text>
+              <Text adjustsFontSizeToFit={true} style={styles.noContentText}>
+                No tags found.
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -155,17 +157,22 @@ const styles = StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
+    alignItems: 'stretch',
     justifyContent: 'flex-start',
     marginTop: 0,
     paddingTop: 0,
   },
 
   formView: {
-    flex: 2,
+    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
   },
 
   listContainerView: {
-    flex: 5,
+    flex: 1,
+    flexGrow: 4,
+    flexShrink: 0.5,
   },
 
   overlayView: { flex: 1 },

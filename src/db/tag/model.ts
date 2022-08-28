@@ -1,16 +1,20 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { createErrorWarning, handleDbError } from '../helpers';
+import { createErrorWarning } from '../../helpers';
+import { generateIsoDate, handleDbError } from '../helpers';
 
 export type Tag = {
   id: string;
   name: string;
+  updatedAt: string;
 };
+
+export type TagInput = Omit<Tag, 'id' | 'updatedAt'>;
 
 export const TagProperties = {
   name: {
     minLength: 3,
-    maxLenth: 10,
+    maxLenth: 20,
   },
 };
 
@@ -30,9 +34,10 @@ export const tagSchema: RxJsonSchema<Tag> = {
       type: 'string',
       maxLength: TagProperties.name.maxLenth,
     },
+    updatedAt: { type: 'string', format: 'date-time', maxLength: 50 },
   },
-  indexes: ['name'],
-  required: ['name'],
+  indexes: ['name', 'updatedAt'],
+  required: ['name', 'updatedAt'],
 };
 
 export type TagCollection = RxCollection<Tag, undefined, TagCollectionMethods>;
@@ -40,15 +45,15 @@ export type TagDocument = RxDocument<Tag>;
 
 // we declare one static ORM-method for the collection
 type TagCollectionMethods = {
-  insertTag(this: TagCollection, data: Omit<Tag, 'id'>): Promise<boolean>;
+  insertTag(this: TagCollection, data: TagInput): Promise<boolean>;
   deleteTag(this: TagCollection, data: Tag): Promise<boolean>;
-  updateTag(this: TagCollection, tag: Tag, data: Omit<Tag, 'id'>): Promise<boolean>;
+  updateTag(this: TagCollection, tag: Tag, data: TagInput): Promise<boolean>;
   getTagByName(this: TagCollection, name: string): Promise<TagDocument | null>;
   getTag(this: TagCollection, id: string): Promise<TagDocument | null>;
 };
 
 export const tagCollectionMethods: TagCollectionMethods = {
-  insertTag: async function (this: TagCollection, data: Omit<Tag, 'id'>) {
+  insertTag: async function (this: TagCollection, data: TagInput) {
     if (data?.name) {
       try {
         const found = await this.getTagByName(data.name);
@@ -59,8 +64,9 @@ export const tagCollectionMethods: TagCollectionMethods = {
         }
 
         await this.insert({
-          id: uuidv4(),
           ...data,
+          id: uuidv4(),
+          updatedAt: generateIsoDate(),
         });
         return true;
       } catch (e) {
@@ -77,6 +83,11 @@ export const tagCollectionMethods: TagCollectionMethods = {
     try {
       const found = await this.getTag(data.id);
       if (found) {
+        await found.update({
+          $set: {
+            deleted: true,
+          },
+        });
         await found.remove();
         return true;
       } else {
@@ -89,7 +100,7 @@ export const tagCollectionMethods: TagCollectionMethods = {
     }
   },
 
-  updateTag: async function (this: TagCollection, tag: Tag, data: Omit<Tag, 'id'>) {
+  updateTag: async function (this: TagCollection, tag: Tag, data: TagInput) {
     if (tag?.name) {
       try {
         const found = await this.getTag(tag.id);

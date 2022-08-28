@@ -1,9 +1,55 @@
+import { Alert } from 'react-native';
 export function makeExcerpt(text: string, lenght: number): string {
   let str = text || '';
   if (text.length > lenght) {
     str = str.substring(0, lenght) + '...';
   }
   return str;
+}
+
+export function createErrorWarning(message: string): void {
+  Alert.alert('Error', message || '', [{ text: 'OK' }]);
+}
+
+export function createInfoAlert(title: string, message: string): void {
+  Alert.alert(title || 'Warning', message || '', [{ text: 'OK' }]);
+}
+
+export async function createDeleteAlert(
+  identification: string,
+  onPress: (...props) => Promise<unknown>,
+): Promise<void> {
+  Alert.alert('Delete?', `Are you sure you want to delete ${identification}`, [
+    {
+      text: 'Cancel',
+      style: 'cancel',
+    },
+    {
+      text: 'OK',
+      onPress: async () => {
+        await onPress();
+      },
+    },
+  ]);
+}
+
+export async function createCancelAlert(
+  title: string,
+  message: string,
+  onPress: (...props) => Promise<unknown>,
+): Promise<void> {
+  Alert.alert(title || '', message || '', [
+    {
+      text: 'Cancel',
+      style: 'cancel',
+    },
+    {
+      text: 'OK',
+      onPress: async () => {
+        await onPress();
+      },
+    },
+  ]);
 }
 
 export function convertMinutesToStringTime(minutes: number): string {
