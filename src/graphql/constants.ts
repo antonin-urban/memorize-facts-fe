@@ -9,7 +9,7 @@ export const GQL_SERVER_URL = 'https://memorize-facts-backend.herokuapp.com/api/
  * that are not replicated.
  * This value is the same as the limit in the feedForRxDBReplication() schema.
  */
-export const SYNC_BATCH_PULL_SIZE = 1;
+export const SYNC_BATCH_PULL_SIZE = 5;
 
 /**
  * batchSize (optional)

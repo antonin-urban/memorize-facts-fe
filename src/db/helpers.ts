@@ -34,7 +34,6 @@ export function generateIsoDate(): string {
 }
 
 export function handleReplicationError<T>(error: RxReplicationError<T>): void {
-  console.error(JSON.stringify(error, null, 2));
   if (error.type === 'pull') {
     console.error('error pulling from GraphQL server', error.innerErrors);
   } else if (error.type === 'push') {
