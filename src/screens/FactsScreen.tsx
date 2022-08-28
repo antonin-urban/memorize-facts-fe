@@ -4,8 +4,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import FactForm from '../components/facts/FactForm';
 import { FactDocument, Fact } from '../db/fact/model';
-import { createDeleteAlert } from '../db/helpers';
-import { makeExcerpt } from '../helpers';
+import { makeExcerpt, createDeleteAlert } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function FactsScreen(): React.ReactElement {

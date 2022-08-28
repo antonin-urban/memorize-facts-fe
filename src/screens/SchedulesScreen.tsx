@@ -3,8 +3,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import ScheduleForm from '../components/schedules/ScheduleForm';
-import { createDeleteAlert } from '../db/helpers';
 import { ScheduleDocument, Schedule } from '../db/schedule/model';
+import { createDeleteAlert } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL } from '../styleConstants';
 
 function SchedulesScreen(): React.ReactElement {

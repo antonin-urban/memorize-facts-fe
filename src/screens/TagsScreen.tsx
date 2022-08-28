@@ -3,8 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import TagForm from '../components/tags/TagForm';
-import { createDeleteAlert } from '../db/helpers';
 import { Tag, TagDocument, TagInput } from '../db/tag/model';
+import { createDeleteAlert } from '../helpers';
 import { FONT_SMALL, FONT_MEDIUM } from '../styleConstants';
 
 function TagsScreen(): React.ReactElement {
@@ -157,21 +157,21 @@ const styles = StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
+    alignItems: 'stretch',
     justifyContent: 'flex-start',
     marginTop: 0,
     paddingTop: 0,
+    flexGrow: 1,
   },
 
   formView: {
-    flex: 3,
-    flexGrow: 3,
-    flexShrink: 3,
+    flexGrow: 0.4,
+    flex: 1,
   },
 
   listContainerView: {
-    flex: 6,
-    flexGrow: 6,
-    flexShrink: 3,
+    flexGrow: 1,
+    flexShrink: -1,
   },
 
   overlayView: { flex: 1 },

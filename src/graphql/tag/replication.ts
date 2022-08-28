@@ -38,7 +38,7 @@ type TagCreateInput = {
 
 const pushQueryBuilder: RxGraphQLReplicationPushQueryBuilder = (tags: TagDocument[]) => {
   const query = gql`
-    mutation CreateHumans($tags: [TagCreateInput!]) {
+    mutation CreateTags($tags: [TagCreateInput!]) {
       setRxDBReplicationTags(tags: $tags) {
         id # GraphQL does not allow returning void, so we return one id.
       }
@@ -77,9 +77,9 @@ export const syncOptionsGraphQL: SyncOptionsGraphQL<Tag> = {
 
 function convertTagDocumentToGqlTag(tagDoc: TagDocument): TagCreateInput {
   return {
-    frontendId: tagDoc.id,
-    name: tagDoc.name,
-    updatedAt: tagDoc.updatedAt,
+    frontendId: tagDoc.id || '',
+    name: tagDoc.name || '',
+    updatedAt: tagDoc.updatedAt || '',
     deleted: tagDoc.deleted,
   };
 }

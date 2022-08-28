@@ -4,7 +4,6 @@ import { useContext, useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { AppContext, AppContextType } from '../components/AppContext';
 import SettingsForm, { SettingsValues } from '../components/settings/SettingsForm';
-import { createErrorWarning, createInfoAlert } from '../db/helpers';
 import {
   destroyLoginInSecureStore,
   getLoginFromSecureStore,
@@ -13,6 +12,7 @@ import {
   SYNC_SECURE_STORE_STATUS,
 } from '../db/secureStore';
 import { LOGIN_QUERY } from '../graphql/constants';
+import { createInfoAlert, createErrorWarning, createCancelAlert } from '../helpers';
 import { FONT_EXTRA_BIG } from '../styleConstants';
 
 const setLoginInfoToContext = async ({ email, password, syncOn }: SettingsValues, context: AppContextType) => {
@@ -33,16 +33,17 @@ const logOut = async (context: AppContextType) => {
   const [email] = await getLoginFromSecureStore();
   if (email) {
     try {
-      await destroyLoginInSecureStore();
-      await setSyncStatusInSecureStore(SYNC_SECURE_STORE_STATUS.DISABLED);
-      context.setSyncStatus(false);
-      createInfoAlert('Succed', 'Logged out');
+      await createCancelAlert('Log out', `Are you sure you want to log out from ${email}?`, async () => {
+        await destroyLoginInSecureStore();
+        await setSyncStatusInSecureStore(SYNC_SECURE_STORE_STATUS.DISABLED);
+        context.setSyncStatus(false);
+        createInfoAlert('Succed', 'Logged out');
+      });
     } catch (e) {
       console.error(e);
       createErrorWarning('Could not log out');
     }
   }
-  return;
 };
 
 type LoginInfo = [string, string];
@@ -80,7 +81,6 @@ function SettingsScreen(): React.ReactElement {
                   }
                 })
                 .catch((err) => {
-                  console.error(JSON.stringify(err, null, 2));
                   createErrorWarning(`GQL Server error: ${err.message}`);
                 });
             } catch (e) {
@@ -89,8 +89,8 @@ function SettingsScreen(): React.ReactElement {
           }}
           logOut={async () => await logOut(context)}
           initialValues={{
-            email: loginInfo[0] ?? '',
-            password: loginInfo[1] ?? '',
+            email: loginInfo[0] || '',
+            password: loginInfo[1] || '',
             syncOn: context.syncStatus,
           }}
         />

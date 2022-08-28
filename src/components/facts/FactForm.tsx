@@ -73,7 +73,7 @@ function FactForm({
         >
           {({ handleChange, handleBlur, handleSubmit, values, touched, errors, setFieldValue }) => (
             <View style={styles.formDataView}>
-              <ScrollView>
+              <ScrollView bounces={false}>
                 <Input
                   style={styles.input}
                   label={

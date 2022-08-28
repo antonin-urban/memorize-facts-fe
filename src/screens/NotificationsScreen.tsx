@@ -4,8 +4,8 @@ import React, { useEffect, useState, useContext, useReducer, Reducer } from 'rea
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from '../components/AppContext';
 import { Fact, FactDocument } from '../db/fact/model';
-import { createErrorWarning } from '../db/helpers';
 import { ScheduleDocument, Schedule } from '../db/schedule/model';
+import { createErrorWarning } from '../helpers';
 import { FONT_MEDIUM, FONT_SMALL, FONT_BIG } from '../styleConstants';
 
 type NotificationState = {

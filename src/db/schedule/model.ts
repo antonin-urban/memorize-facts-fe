@@ -1,7 +1,7 @@
 import { RxCollection, RxDocument, RxJsonSchema } from 'rxdb';
 import { v4 as uuidv4 } from 'uuid';
-import { convertMinutesToHoursAndMinutes, convertMinutesToStringTime } from '../../helpers';
-import { createErrorWarning, handleDbError } from '../helpers';
+import { convertMinutesToStringTime, createErrorWarning } from '../../helpers';
+import { handleDbError } from '../helpers';
 
 export type Schedule = {
   id: string;
