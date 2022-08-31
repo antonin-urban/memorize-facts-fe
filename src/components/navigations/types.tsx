@@ -27,7 +27,6 @@ export enum NotificationsNavRouteNames {
 export type NotificationsStackNavParamList = {
   NotificationsScreen: undefined;
   SettingsScreen: undefined;
-  HeroesScreen: undefined;
 };
 
 export type NotificationsScreenProps<T extends keyof NotificationsStackNavParamList> = CompositeScreenProps<

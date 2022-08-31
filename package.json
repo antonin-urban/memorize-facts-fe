@@ -4,6 +4,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "yarn lint && expo start",
+    "start:prod": "yarn lint && expo start --no-dev --minify",
     "android": "yarn lint && expo start --android",
     "ios": "yarn lint && expo start --ios",
     "web": "yarn lint && expo start --web",
