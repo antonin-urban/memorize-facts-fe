@@ -8,14 +8,12 @@ import { RxDBReplicationGraphQLPlugin } from 'rxdb/plugins/replication-graphql';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { FactCollection, factCollectionMethods, factDocumentMethods, factSchema } from './fact/model';
 import { generateIsoDate } from './helpers';
-import { HeroCollection, heroSchema } from './hero/model';
 import { ScheduleCollection, scheduleCollectionMethods, scheduleSchema } from './schedule/model';
 import { TagCollection, tagCollectionMethods, tagSchema } from './tag/model';
 
 const DB_NAME = 'memorize-facts-db';
 
 export type MemorizeFactsDatabaseCollections = {
-  heroes: HeroCollection;
   tags: TagCollection;
   facts: FactCollection;
   schedules: ScheduleCollection;
@@ -51,7 +49,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       const { RxDBDevModePlugin } = await import('rxdb/plugins/dev-mode');
       addRxPlugin(RxDBDevModePlugin);
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 
@@ -64,19 +62,13 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       });
     }
   } catch (err) {
-    console.error('ERROR CREATING DATABASE', err);
+    console.warn('ERROR CREATING DATABASE', err);
   }
 
   try {
     await database.addCollections<MemorizeFactsDatabaseCollections>({
-      heroes: {
-        schema: heroSchema,
-        //methods: heroDocMethods,
-        //statics: heroCollectionMethods,
-      },
       tags: {
         schema: tagSchema,
-        //methods: tagCollectionMethods,
         statics: tagCollectionMethods,
       },
       facts: {
@@ -86,12 +78,11 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       },
       schedules: {
         schema: scheduleSchema,
-        //methods: factDocumentMethods,
         statics: scheduleCollectionMethods,
       },
     });
   } catch (err) {
-    console.error('ERROR CREATING COLLECTIONS', err);
+    console.warn('ERROR CREATING COLLECTIONS', err);
   }
 
   try {
@@ -103,7 +94,7 @@ export async function initialize(databaseInstance: RxDatabase): Promise<RxDataba
       database.$.subscribe((changeEvent) => console.log(changeEvent)); // turn on logging via observable
     }
   } catch (err) {
-    console.error('ERROR RUNNING POST INIT DB ACTIONS', err);
+    console.warn('ERROR RUNNING POST INIT DB ACTIONS', err);
   }
 
   return database;

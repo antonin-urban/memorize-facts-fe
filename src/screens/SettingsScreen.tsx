@@ -40,9 +40,12 @@ const logOut = async (context: AppContextType) => {
         createInfoAlert('Succed', 'Logged out');
       });
     } catch (e) {
-      console.error(e);
+      console.warn(e);
       createErrorWarning('Could not log out');
     }
+  } else {
+    context.setSyncStatus(false);
+    await setSyncStatusInSecureStore(SYNC_SECURE_STORE_STATUS.DISABLED);
   }
 };
 
@@ -67,31 +70,35 @@ function SettingsScreen(): React.ReactElement {
         <SettingsForm
           onSubmit={async (settingsFormProps) => {
             try {
-              await loginToGqlServer({
+              const response = await loginToGqlServer({
                 variables: { email: settingsFormProps.email, password: settingsFormProps.password },
-              })
-                .then(async (res) => {
-                  if (res.data?.authenticateUserWithPassword?.__typename === 'UserAuthenticationWithPasswordSuccess') {
-                    await setLoginInfoToContext({ ...settingsFormProps, syncOn: true }, context);
-                    createInfoAlert('Succes', 'Login successful');
-                  } else {
-                    const errorMessage = res.data?.authenticateUserWithPassword?.message;
-                    console.error(errorMessage);
-                    createErrorWarning(`GQL Server error: ${errorMessage}`);
-                  }
-                })
-                .catch((err) => {
-                  createErrorWarning(`GQL Server error: ${err.message}`);
-                });
+              });
+
+              if (response?.data?.authenticateUserWithPassword) {
+                if (
+                  response.data.authenticateUserWithPassword?.__typename === 'UserAuthenticationWithPasswordSuccess'
+                ) {
+                  await setLoginInfoToContext({ ...settingsFormProps, syncOn: true }, context);
+                  createInfoAlert('Succes', 'Login successful');
+                } else {
+                  const errorMessage = response?.data?.authenticateUserWithPassword?.message || 'Unknown error';
+                  console.warn(new Error(errorMessage));
+                  createErrorWarning(`GQL Server error: ${errorMessage}`);
+                }
+              } else {
+                console.warn(response);
+                createErrorWarning(`GQL Server error.`);
+              }
             } catch (e) {
-              createErrorWarning(`Login error: ${e}`);
+              console.warn(e);
+              createErrorWarning('Login error');
             }
           }}
           logOut={async () => await logOut(context)}
           initialValues={{
             email: loginInfo[0] || '',
             password: loginInfo[1] || '',
-            syncOn: context.syncStatus,
+            syncOn: true,
           }}
         />
       </View>

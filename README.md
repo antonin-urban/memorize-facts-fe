@@ -22,4 +22,9 @@ will execute TypeScript compiler in watch mode and start Expo development server
 Please note that you need to have [Expo CLI](https://docs.expo.dev/workflow/expo-cli/) installed.
 
 ### GraphQL sync
-If you want to sync to your own local instance of **Memorize facts backend**, you need to change the GraphQL server endpoint URL via `GQL_SERVER_URL` constant and located in `src/config.ts` file.
+If you want to sync to your own local instance of **Memorize facts backend**, you need to change the GraphQL server endpoint URL via `GQL_SERVER_URL` constant and located in `src/config.ts` file. 
+
+Default URL points to [Heroku server](https://memorize-facts-backend.herokuapp.com/) deployed from this repository. You can send data to the server using by login with test user credentials: login `test@email.com` with password `Test1234`. Please note that this server is not production ready and may be down in the future. Do not insert production data into it.
+
+## License
+Unlicensed
